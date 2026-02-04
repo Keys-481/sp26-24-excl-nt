@@ -1,0 +1,41 @@
+services:
+  backend:
+    build:
+      context: .
+      args:
+        # define public url and api base url for frontend build, SDP will use f25-the-shire
+        PUBLIC_URL: "${PUBLIC_URL:-/f25-the-shire}"
+        API_BASE_URL: "${API_BASE_URL:-/api}"
+
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      API_BASE_URL: "/api"
+
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    restart: on-failure
+    command: sh -c "/app/backend/start.sh"
+
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data:rw
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
