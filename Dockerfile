@@ -8,7 +8,7 @@ RUN npm ci
 COPY frontend/ ./
 
 # Build to /app/frontend/dist
-ARG PUBLIC_URL=/f25-the-shire
+ARG PUBLIC_URL=/s26-EXCEL-NT
 ARG API_BASE_URL=/api
 ENV PUBLIC_URL=${PUBLIC_URL}
 ENV VITE_API_URL=${API_BASE_URL}

@@ -3,8 +3,8 @@ services:
     build:
       context: .
       args:
-        # define public url and api base url for frontend build, SDP will use f25-the-shire
-        PUBLIC_URL: "${PUBLIC_URL:-/f25-the-shire}"
+        # define public url and api base url for frontend build, SDP will use s26-EXCEL-NT
+        PUBLIC_URL: "${PUBLIC_URL:-/s26-EXCEL-NT}"
         API_BASE_URL: "${API_BASE_URL:-/api}"
 
     environment:
