@@ -2,121 +2,92 @@ name: CI
 
 on:
   push:
-    branches: [ "**" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "**" ]
-  workflow_dispatch:
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+    branches: [ "main" ]
 
 jobs:
   backend:
+    name: Backend Build and Test
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: excl-nt-db
+          POSTGRES_DB: excel-nt-db
         ports:
         - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d excl-nt-db"
+          --health-cmd="pg_isready -U postgres"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-    env:
-      DB_HOST: localhost
-      DB_USER: postgres
-      DB_PASS: postgres
-      DB_NAME: excl-nt-db
-      DB_PORT: 5432
+          
+    strategy:
+      matrix: 
+        node-version: [18.x, 20.x]
+
+    env: 
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/excel-nt-db
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Node Setup w/ npm cache
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          check-latest: true
-          cache: "npm"
-          cache-dependency-path: |
-            backend/package-lock.json
-            frontend/package-lock.json
-            package-lock.json
-          
-      - name: Create .env.test from secret
-        run: printf "%s" "${{ secrets.ENV_TEST }}" > .env.test
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
-      - name: Mirror .env.test to backend/.env
-        run: cp .env.test backend/.env
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
 
-      - name: Install backend deps
-        if: hashFiles('backend/package-lock.json') != ''
-        run: cd backend && npm ci
-      
-      - name: Run backend tests
-        run: ./test.sh backend-only
+      - name: Run migrations
+        working-directory: backend
+        run: npm run migrate --if-present
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run build --if-present
+
+      - name: Test backend
+        working-directory: backend
+        run: npm test
+
 
   frontend:
+    name: Frontend Build & Test
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: excl-nt-db
-        ports:
-        - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres -d excl-nt-db"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-    env:
-      DB_HOST: localhost
-      DB_USER: postgres
-      DB_PASS: postgres
-      DB_NAME: excl-nt-db
-      DB_PORT: 5432
-        
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Node Setup w/ npm cache
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          check-latest: true
-          cache: "npm"
-          cache-dependency-path: |
-            frontend/package-lock.json
-            package-lock.json
-        
-      - name: Create .env.test from secret
-        run: printf "%s" "${{ secrets.ENV_TEST }}" > .env.test
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Install frontend deps
-        if: hashFiles('frontend/package-lock.json') != ''
-        run: cd frontend && npm ci
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-playwright-
-        
-      - name: Install Playwright
-        run: cd frontend && npx playwright install
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
 
-      - name: Run frontend tests
-        run: ./test.sh frontend-only
+      - name: Test frontend
+        working-directory: frontend
+        run: npm test
