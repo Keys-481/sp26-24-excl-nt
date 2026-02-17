@@ -1,4 +1,4 @@
-[![CI](https://github.com/Keys-481/fa25-the-shire/actions/workflows/ci.yml/badge.svg)](https://github.com/Keys-481/fa25-the-shire/actions/workflows/ci.yml)
+[![CI](https://github.com/Keys-481/sp26-24-excl-nt/actions/workflows/ci.yml/badge.svg)](https://github.com/Keys-481/sp26-24-excl-nt/actions/workflows/ci.yml)
 
 # Capstone Project: Graduate Advising Tool
 This project is a full-stack web application for managing graduate student degree plans and advising workflows. The platform includes a Node.js/Express backend, a React frontend, and a PostgreSQL database.
