@@ -58,7 +58,7 @@ jobs:
 
       - name: Test backend
         working-directory: backend
-        run: ./test.sh backend-only
+        run: bash ./test.sh backend-only
 
   frontend:
     name: Frontend Build and Test
@@ -89,4 +89,4 @@ jobs:
 
       - name: Test frontend
         working-directory: frontend
-        run: ./test.sh frontend-only
+        run: bash ./test.sh frontend-only
