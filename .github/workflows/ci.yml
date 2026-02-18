@@ -25,10 +25,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-          
-    env: 
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/excel-nt-db
-
+        
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
