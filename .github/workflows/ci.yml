@@ -25,6 +25,12 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+    env:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: excel-nt-db
+      DB_PORT: 5432
         
     steps:
       - name: Checkout code
