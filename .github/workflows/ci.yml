@@ -66,6 +66,27 @@ jobs:
   frontend:
     name: Frontend Build and Test
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: excel-nt-db
+        ports:
+        - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d excel-nt-db"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: excel-nt-db
+      DB_PORT: 5432
     
     steps:
       - name: Checkout code
