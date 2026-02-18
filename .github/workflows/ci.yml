@@ -58,12 +58,11 @@ jobs:
 
       - name: Test backend
         working-directory: backend
-        run: bash ./test.sh backend-only
+        run: bash ../test.sh backend-only
 
   frontend:
     name: Frontend Build and Test
     runs-on: ubuntu-latest
-    needs: backend
     
     steps:
       - name: Checkout code
@@ -89,4 +88,4 @@ jobs:
 
       - name: Test frontend
         working-directory: frontend
-        run: bash ./test.sh frontend-only
+        run: bash ../test.sh frontend-only
