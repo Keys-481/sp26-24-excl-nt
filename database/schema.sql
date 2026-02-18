@@ -166,6 +166,34 @@ CREATE TABLE semesters (
     sem_end_date DATE NOT NULL
 );
 
+-- Timelines Table:
+-- Defines important dates for each semester by program.
+CREATE TABLE timelines (
+    timeline_id SERIAL PRIMARY KEY,
+    semester_id int FOREIGN KEY REFERENCES semesters(semester_id),
+    program_id int FOREIGN KEY REFERENCES program(program_id),
+    -- Classes (Class status changes from "planned" to "in progress" to "complete") 
+    ---- TODO: This may be redunant with semesters(sem_start_date) and semesters(sem_end_date)?
+    class_start DATE NOT NULL,
+    class_end DATE NOT NULL,
+    commencement_date DATE NOT NULL,
+    -- Registration Deadlines (Reminders for students, alerts to advisors, lock course status)
+    reg_start DATE NOT NULL,
+    reg_end DATE NOT NULL, -- Open registration ends. Permission number required.
+    reg_drop DATE NOT NULL,
+    -- Application Deadlines (Reminders for students/advisors)
+    app_addmission_candidacy DATE NOT NULL,
+    app_grad_cert DATE NOT NULL,
+    -- Dissertation Deadlines
+    dissert_defense DATE NOT NULL,
+    dissert_advisor_approved DATE NOT NULL,
+    dissert_final DATE NOT NULL,
+    dissert_waiver_next_semester DATE NOT NULL,
+    -- Other Deadlines
+    portfolio_credit DATE NOT NULL, -- Last day to add graduate dissertation, thesis, project, or portfolio credit
+    independent_credit DATE NOT NULL, -- Last day to add graduate assessment, directed research, independent study, internship, or reading and conference.
+)
+
 -- Course Prerequisites Table:
 -- Many-to-Many relationship between courses to define prerequisites
 CREATE TABLE course_prerequisites (
