@@ -2,41 +2,38 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "**" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "**" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   backend:
-    name: Backend Build and Test
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: excel-nt-db
+          POSTGRES_DB: shire_test
         ports:
-        - 5432:5432
+          - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d excel-nt-db"
-          --health-interval=10s
+          --health-cmd="pg_isready -U postgres -d shire_test -h 127.0.0.1 -p 5432"
+          --health-interval=5s
           --health-timeout=5s
-          --health-retries=5
-    env:
-      DB_HOST: localhost
-      DB_USER: postgres
-      DB_PASS: postgres
-      DB_NAME: excel-nt-db
-      DB_PORT: 5432
-        
+          --health-retries=20
+
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Node Setup w/ npm cache
         uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -46,53 +43,42 @@ jobs:
             backend/package-lock.json
             frontend/package-lock.json
             package-lock.json
+          
+      - name: Create .env.test from secret
+        run: printf "%s" "${{ secrets.ENV_TEST }}" > .env.test
 
-      - name: Install backend dependencies
-        working-directory: backend
-        run: npm ci
+      - name: Mirror .env.test to backend/.env
+        run: cp .env.test backend/.env
 
-      - name: Run migrations
-        working-directory: backend
-        run: npm run migrate --if-present
-
-      - name: Build backend
-        working-directory: backend
-        run: npm run build --if-present
-
-      - name: Test backend
-        working-directory: backend
-        run: bash ../test.sh backend-only
+      - name: Install backend deps
+        if: hashFiles('backend/package-lock.json') != ''
+        run: cd backend && npm ci
+      
+      - name: Run backend tests
+        run: ./test.sh backend-only
 
   frontend:
-    name: Frontend Build and Test
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: excel-nt-db
+          POSTGRES_DB: shire_test
         ports:
-        - 5432:5432
+          - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d excel-nt-db"
-          --health-interval=10s
+          --health-cmd="pg_isready -U postgres -d shire_test -h 127.0.0.1 -p 5432"
+          --health-interval=5s
           --health-timeout=5s
-          --health-retries=5
-    env:
-      DB_HOST: localhost
-      DB_USER: postgres
-      DB_PASS: postgres
-      DB_NAME: excel-nt-db
-      DB_PORT: 5432
-    
+          --health-retries=20
+        
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Node Setup w/ npm cache
         uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -101,15 +87,23 @@ jobs:
           cache-dependency-path: |
             frontend/package-lock.json
             package-lock.json
+        
+      - name: Create .env.test from secret
+        run: printf "%s" "${{ secrets.ENV_TEST }}" > .env.test
 
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm ci
+      - name: Install frontend deps
+        if: hashFiles('frontend/package-lock.json') != ''
+        run: cd frontend && npm ci
 
-      - name: Build frontend
-        working-directory: frontend
-        run: npm run build
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-playwright-
+        
+      - name: Install Playwright
+        run: cd frontend && npx playwright install
 
-      - name: Test frontend
-        working-directory: frontend
-        run: bash ../test.sh frontend-only
+      - name: Run frontend tests
+        run: ./test.sh frontend-only
