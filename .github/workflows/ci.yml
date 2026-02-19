@@ -33,7 +33,7 @@ jobs:
       DB_HOST: localhost
       DB_USER: postgres
       DB_PASS: postgres
-      DB_NAME: excel-nt-db
+      DB_NAME: excl-nt-db
       DB_PORT: 5432
 
     steps:
@@ -84,7 +84,7 @@ jobs:
       DB_HOST: localhost
       DB_USER: postgres
       DB_PASS: postgres
-      DB_NAME: excel-nt-db
+      DB_NAME: excl-nt-db
       DB_PORT: 5432
         
     steps:
