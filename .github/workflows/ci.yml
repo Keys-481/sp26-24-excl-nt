@@ -14,20 +14,27 @@ concurrency:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    
     services:
       postgres:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: shire_test
+          POSTGRES_DB: excel-nt-db
         ports:
-          - 5432:5432
+        - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d shire_test -h 127.0.0.1 -p 5432"
-          --health-interval=5s
+          --health-cmd="pg_isready -U postgres -d excel-nt-db"
+          --health-interval=10s
           --health-timeout=5s
-          --health-retries=20
+          --health-retries=5
+    env:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: excel-nt-db
+      DB_PORT: 5432
 
     steps:
       - name: Checkout
@@ -65,14 +72,20 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: shire_test
+          POSTGRES_DB: excel-nt-db
         ports:
-          - 5432:5432
+        - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d shire_test -h 127.0.0.1 -p 5432"
-          --health-interval=5s
+          --health-cmd="pg_isready -U postgres -d excel-nt-db"
+          --health-interval=10s
           --health-timeout=5s
-          --health-retries=20
+          --health-retries=5
+    env:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: excel-nt-db
+      DB_PORT: 5432
         
     steps:
       - name: Checkout
