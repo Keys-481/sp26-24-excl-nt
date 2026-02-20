@@ -1,4 +1,4 @@
-const { isPassed, daysUntil } = require('../../src/utils/timeline')
+const { isPassed, daysUntil } = require('../../src/utils/timeline');
 
 var lastYear;
 var lastMonth;
