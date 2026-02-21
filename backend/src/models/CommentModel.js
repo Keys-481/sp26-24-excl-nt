@@ -19,25 +19,25 @@ async function createComment(programId, studentId, authorId, commentText) {
         const comment = commentText.trim(); // sanitize input
         // Insert the new comment and return the inserted row with author names
         const result = await pool.query(
-        `INSERT INTO degree_plan_comments (program_id, student_id, author_id, comment_text)
-         VALUES ($1, $2, $3, $4) RETURNING *,
-        (SELECT u.first_name FROM users u WHERE u.user_id = $3) AS first_name,
-        (SELECT u.last_name FROM users u WHERE u.user_id = $3) AS last_name`,
-        [programId, studentId, authorId, comment]
-    );
+            `INSERT INTO degree_plan_comments (program_id, student_id, author_id, comment_text)
+            VALUES ($1, $2, $3, $4) RETURNING *,
+            (SELECT u.first_name FROM users u WHERE u.user_id = $3) AS first_name,
+            (SELECT u.last_name FROM users u WHERE u.user_id = $3) AS last_name`,
+            [programId, studentId, authorId, comment]
+        );
 
-    const newComment = result.rows[0]; // newly created comment
+        const newComment = result.rows[0]; // newly created comment
 
-    // trigger notifications for relevant users
-    await NotificationsModel.createNewCommentNotif({
-        author_id: authorId,
-        notif_message: comment,
-        comment_id: newComment.comment_id,
-        program_id: programId,
-        student_id: studentId,
-    }, "comment_created");
+        // trigger notifications for relevant users
+        await NotificationsModel.createNewCommentNotif({
+            author_id: authorId,
+            notif_message: comment,
+            comment_id: newComment.comment_id,
+            program_id: programId,
+            student_id: studentId,
+        }, "comment_created");
 
-    return newComment;
+        return newComment;
     } catch (error) {
         console.error('Error creating comment:', error);
         throw error;

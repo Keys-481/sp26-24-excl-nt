@@ -33,10 +33,10 @@ function campusDate() {
 function refDate(date) {
     const d = new Date(date);
 
-    if(d.valueOf().isNaN()) {
-        throw new SyntaxError("Invalid date format.\n");
-    } else {
+    if(d instanceof Date && !isNaN(d)) {
         return d;
+    } else {
+        throw new SyntaxError("Invalid date format.\n");
     }
 }
 
@@ -66,7 +66,16 @@ function daysUntil(date)
         return null;
     }
 
-    return (refDate(date) - campusDate()) / MS_PER_DAY;
+    const numDays = (refDate(date) - campusDate()) / MS_PER_DAY;
+
+    if(numDays > 0)
+    {
+        return Math.floor(numDays) + 0;
+    }
+    else
+    {
+        return Math.ceil(numDays) + 0;
+    }
 }
 
 module.exports = {
