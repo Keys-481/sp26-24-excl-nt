@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS
     students,
     advisors,
     users,
+    timelines,
     semesters,
     programs,
     courses,
@@ -168,10 +169,10 @@ CREATE TABLE semesters (
 
 -- Timelines Table:
 -- Defines important dates for each semester by program.
-CREATE TABLE IF NOT EXISTS timelines (
+CREATE TABLE timelines (
     timeline_id SERIAL PRIMARY KEY,
-    sem_id INTEGER UNIQUE NOT NULL,
-    prog_id INTEGER UNIQUE NOT NULL,
+    sem_id INT REFERENCES courses(course_id) ON DELETE CASCADE,
+    prog_id INT REFERENCES programs(program_id) ON DELETE CASCADE,
     -- Classes (Class status changes from "planned" to "in progress" to "complete") 
     ---- TODO: This may be redunant with semesters(sem_start_date) and semesters(sem_end_date)?
     class_start DATE NOT NULL,
@@ -190,10 +191,8 @@ CREATE TABLE IF NOT EXISTS timelines (
     dissert_final DATE NOT NULL,
     dissert_waiver_next_semester DATE NOT NULL,
     -- Other Deadlines
-    portfolio_credit DATE NOT NULL, -- Last day to add graduate dissertation, thesis, project, or portfolio credit
-    independent_credit DATE NOT NULL, -- Last day to add graduate assessment, directed research, independent study, internship, or reading and conference.
-    FOREIGN KEY (sem_id) REFERENCES semesters(semester_id),
-    FOREIGN KEY (prog_id) REFERENCES programs(program_id)
+    portfolio_credit_due DATE NOT NULL, -- Last day to add graduate dissertation, thesis, project, or portfolio credit
+    independent_credit_due DATE NOT NULL -- Last day to add graduate assessment, directed research, independent study, internship, or reading and conference.
 );
 
 -- Course Prerequisites Table:
