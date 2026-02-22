@@ -45,11 +45,13 @@ import AccountingSettings from '../pages/Accounting/Settings'
 
 
 export default function AppRoutes() {
-  const base = import.meta.env.PUBLIC_URL || '/';
+  const base = import.meta.env.VITE_PUBLIC_URL || '/';
+  console.log('basename:', base);
+
   return (
     <AuthProvider>
-      <Router>
-        <Routes basename={base}>
+      <Router basename={base}>
+        <Routes>
           {/* Send users to the login page if not logged in */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
