@@ -8,6 +8,7 @@ require('./loadEnv');
 const path = require('path');
 const dotenv = require('dotenv');
 const apiBase = process.env.API_BASE_URL || '/api';
+const basePath = process.env.PUBLIC_URL || '/';
 
 // Import necessary modules
 const express = require('express');
@@ -53,24 +54,24 @@ async function checkDbConnection() {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(auth);
-
 // Enable CORS for all routes (to allow requests from frontend for development)
 app.use(cors());
 
-// Health checks
-app.get("/api/health", (_req, res) => {
+// Status check endpoints, confirm server is running
+app.get(`${apiBase}/health`, (_req, res) => {
     res.status(200).json({ ok: true, ts: new Date().toISOString() });
 });
-app.get("/api/ready", (_req, res) => {
+app.get(`${apiBase}/ready`, (_req, res) => {
     res.status(200).json({ ready: true });
 });
+
+app.use(`${apiBase}/auth`, authRoutes);
+app.use(apiBase, auth);
 
 // API routes (if more are added, just follow the format below)
 app.use(`${apiBase}/students`, studentRoutes);
 app.use(`${apiBase}/courses`, courseRoutes);
 app.use(`${apiBase}/users`, userRoutes);
-app.use(`${apiBase}/auth`, authRoutes);
 app.use(`${apiBase}/comments`, commentRoutes);
 app.use(`${apiBase}/notifications`, notificationsRoutes);
 app.use(`${apiBase}/programs`, programRoutes);
@@ -80,7 +81,7 @@ app.use(`${apiBase}/graduation`, graduationRoutes);
 function resolveFrontendDist() {
     const candidates = [
         process.env.FRONTEND_DIST,
-        path.resolve(process.cwd(), "frontend_dist"),
+        path.resolve(process.cwd(), "frontend/dist"),
         path.resolve(__dirname, "../frontend_dist"),
         path.resolve(__dirname, "../../frontend_dist"),
     ].filter(Boolean);
@@ -90,17 +91,27 @@ function resolveFrontendDist() {
             if (fs.existsSync(p) && fs.existsSync(path.join(p, "index.html"))) {
                 return p;
             }
-        } catch (_) {}
+        } catch (_) { }
     }
     return null;
 }
 
 const distPath = resolveFrontendDist();
+console.log(`[server] distPath resolved to: ${distPath}`);
 if (distPath) {
-    app.use(express.static(distPath));
+    console.log(`[server] dist contents:`, fs.readdirSync(distPath));
 
-    // Any non-API route should return the SPA index.html
-    app.get(new RegExp(`^(?!${apiBase}/).+`), (_req, res) => {
+    // Mounts frontend build folder at the base path (e.g. /s26-excl-nt/)
+    app.use(basePath, express.static(distPath));
+
+    // Serves index.html for the base path and any sub-paths (for client-side routing), excluding API routes
+    app.get('/', (_req, res) => res.sendFile(path.join(distPath, "index.html")));
+
+    // Catches all routes under basepath and returns index.html for client-side routing, but ignores API routes
+    const spaPattern = basePath.endsWith('/') ? `${basePath}*splat` : `${basePath}/*splat`;
+    app.get([basePath, spaPattern], (req, res, next) => {
+        if (req.path.startsWith(apiBase)) return next();
+        console.log(`[spa] catching: ${req.path}`);
         res.sendFile(path.join(distPath, "index.html"));
     });
 
@@ -115,9 +126,10 @@ if (distPath) {
     });
 }
 
+
 // Handle 404 for unknown API routes
 app.use((req, res, next) => {
-    if (req.path.startsWith("/api/")) {
+    if (req.path.startsWith(apiBase)) {
         return res.status(404).json({ error: "Not found" });
     }
     return next();
