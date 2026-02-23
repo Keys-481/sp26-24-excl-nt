@@ -11,7 +11,7 @@ import { useAuth } from "../auth/AuthProvider";
  * @returns {Object} API client with get, post, put, delete methods.
  */
 export function useApiClient() {
-    const baseApiUrl = import.meta.env.VITE_API_URL || '/api';
+    const baseApiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
     const { token, user } = useAuth();
 
     const request = useCallback(async (path, options = {}) => {

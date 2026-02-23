@@ -173,7 +173,7 @@ export function AuthProvider({ children }) {
             // Another tab is logged out
             if (e.key === STORAGE.AUTH && !e.newValue && isAuthed) {
                 setAuth({ isAuthed: false, token: null, user: null });
-                window.location.href = "/login";
+                window.location.href = `${import.meta.env.VITE_PUBLIC_URL || ''}/login`;
             }
         };
         window.addEventListener("storage", onStorage);
@@ -199,7 +199,7 @@ export function AuthProvider({ children }) {
         setShowWarning(false);
         resetPreferences();
         clearTimers();
-        window.location.href = "/login";
+        window.location.href = `${import.meta.env.VITE_PUBLIC_URL || ''}/login`;
     }
 
     // Functionality to update user role for logged-in user
