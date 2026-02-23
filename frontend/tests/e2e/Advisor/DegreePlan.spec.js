@@ -208,4 +208,47 @@ test.describe('DegreePlan edit course status', () => {
         const updatedRow = page.locator('tr', { hasText: 'OPWL-507' }).first();
         await expect(updatedRow).toHaveClass(/course-status-planned/, { timeout: 15000 });
     });
+
+    test('course status legend includes accessibility features for colorblind users', async ({ page }, testInfo) => {
+        if (!testInfo.project?.name?.includes('advisor')) test.skip();
+        
+        // Go to advisor/advising page
+        await page.goto(`/advisor/advising`);
+
+        // Search for the student by school ID
+        const searchInput = page.getByPlaceholder('School ID');
+        await searchInput.fill('112299690');
+        await searchInput.press('Enter');
+
+        // Wait for search results to show up
+        await page.waitForSelector('[data-testid="search-results"], table, .results', { timeout: 10000 });
+        await expect(page.getByText('Alice Johnson', { exact: false })).toBeVisible({ timeout: 10000 });
+
+        // Click on the student result
+        await page.getByText('Alice Johnson', { exact: false }).click();
+
+        // Wait for the list of programs to appear
+        await expect(page.getByText('Master of Science in Organizational Performance and Workplace Learning'))
+            .toBeVisible({ timeout: 10000 });
+
+        // Click the desired program
+        await page.getByText('Master of Science in Organizational Performance and Workplace Learning').click();
+
+        // Wait for the degree plan API call and table to load
+        await page.waitForResponse(
+            r =>
+                r.url().includes('/students/112299690/degree-plan') &&
+                r.status() === 200,
+            { timeout: 10000 }
+        );
+
+        // Find and verify the legend row
+        const legendRow = page.locator('.legend-row');
+        await legendRow.waitFor({ state: 'visible', timeout: 15000 });
+        
+        // Verify status labels are present as text (critical accessibility feature for colorblind users)
+        await expect(legendRow).toContainText('Planned');
+        await expect(legendRow).toContainText('Enrolled');
+        await expect(legendRow).toContainText('Completed');
+    });
 });

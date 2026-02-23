@@ -4,6 +4,7 @@
  */
 import { useEffect, useState } from "react";
 import { useApiClient } from "../../lib/apiClient";
+import { Calendar, Clock, CheckCircle } from "lucide-react";
 import CertificateAlert from "./reqViewComps/CertificateAlert";
 import CourseEditRow from "./reqViewComps/CourseEditRow";
 import CourseRow from "./reqViewComps/CourseRow";
@@ -231,14 +232,17 @@ export default function RequirementsView( { courses, program, semesters=[], stud
                             <td colSpan={9} style={{ textAlign: 'left', padding: '6px 10px', fontSize: '0.85rem' }}>
                             <span style={{ display: 'inline-flex', alignItems: 'center', marginRight: '16px' }}>
                                 <span style={{ width: '12px', height: '12px', backgroundColor: 'var(--planned)', border: '1px solid #ccc', marginRight: '6px' }}></span>
+                                <Calendar size={14} style={{ marginRight: '4px' }} />
                                 <span>Planned</span>
                             </span>
                             <span style={{ display: 'inline-flex', alignItems: 'center', marginRight: '16px' }}>
                                 <span style={{ width: '12px', height: '12px', backgroundColor: 'var(--in-progress)', border: '1px solid #ccc', marginRight: '6px' }}></span>
+                                <Clock size={14} style={{ marginRight: '4px' }} />
                                 <span>Enrolled</span>
                             </span>
                             <span style={{ display: 'inline-flex', alignItems: 'center' }}>
                                 <span style={{ width: '12px', height: '12px', backgroundColor: 'var(--completed)', border: '1px solid #ccc', marginRight: '6px' }}></span>
+                                <CheckCircle size={14} style={{ marginRight: '4px' }} />
                                 <span>Completed</span>
                             </span>
                             </td>
