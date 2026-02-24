@@ -3,6 +3,7 @@
  * */
 import { useEffect, useState } from "react";
 import { useApiClient } from "../lib/apiClient";
+import ErrorMessage from "./ErrorMessage.jsx";
 
 // Main ReportLayout component
 export default function ReportLayout({ courseCode }) {
@@ -140,7 +141,7 @@ export default function ReportLayout({ courseCode }) {
 
   // Render logic
   if (loading) return <p>Loading report...</p>;
-  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+  if (error) return <ErrorMessage message={error} />;
   if (!report) return null;
 
   // Render report table

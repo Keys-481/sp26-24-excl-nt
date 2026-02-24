@@ -8,6 +8,7 @@ import SemesterView from "./SemesterView";
 import RequirementsView from "./RequirementView";
 import GraduationStatus from "./GradStatus";
 import { useApiClient } from "../../lib/apiClient";
+import ErrorMessage from "../ErrorMessage.jsx";
 
 /**
  * DegreePlan component displays the degree plan for a specific student.
@@ -62,12 +63,12 @@ export default function DegreePlan({ student, program, studentId: propStudentId,
         
     // Render logic
     if (!studentId || !thisProgramId) {
-        return <p className="error-message">Select a student and a program to view the degree plan.</p>;
+        return <ErrorMessage message={"Select a student and a program to view the degree plan."} />;
     }
 
     // Show loading, error, or no data messages
     if (loading) return <p>Loading degree plan...</p>;
-    if (error) return <p className="error-message">Error: {error}</p>;
+    if (error) return <ErrorMessage message={error} />;
 
     // Render degree plan details
     const courses = planData?.degreePlan ?? [];

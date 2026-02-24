@@ -4,6 +4,7 @@
  */
 import { useEffect, useState } from "react";
 import { useApiClient } from "../lib/apiClient";
+import ErrorMessage from "./ErrorMessage.jsx";
 
 /**
  * GraduationReportLayout
@@ -89,8 +90,8 @@ export default function GraduationReportLayout() {
   };
 
   // Render component
-  if (loading) return <p>Loading graduation applicants...</p>; 
-  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+  if (loading) return <p>Loading graduation applicants...</p>;
+  if (error) return <ErrorMessage message={error} />;
   if (!students.length)
     return <p>No students have applied or been approved for graduation.</p>; 
 

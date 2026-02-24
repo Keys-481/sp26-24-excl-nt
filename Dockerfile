@@ -18,7 +18,7 @@ RUN npm run build
 FROM node:22-alpine AS be-deps
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 # Final Runtime Stage
 FROM node:22-alpine AS runtime
