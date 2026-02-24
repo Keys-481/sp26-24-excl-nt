@@ -9,7 +9,7 @@ COPY frontend/ ./
 
 # Build to /app/frontend/dist
 ARG PUBLIC_URL=/s26-excl-nt
-ARG API_BASE_URL=/s26-excl-nt/api
+ARG API_BASE_URL=/api
 ENV VITE_PUBLIC_URL=${PUBLIC_URL}
 ENV VITE_API_BASE_URL=${API_BASE_URL}
 RUN npm run build
@@ -24,7 +24,7 @@ RUN npm ci --omit=dev
 FROM node:22-alpine AS runtime
 ENV NODE_ENV=production
 ENV PUBLIC_URL=/s26-excl-nt
-ENV API_BASE_URL=/s26-excl-nt/api
+ENV API_BASE_URL=/api
 WORKDIR /app
 
 # Install PostgreSQL client (for pg_isready)
