@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useApiClient } from '../../lib/apiClient.js';
 import CommentForm from './CommentForm.jsx';
 import CommentItem from './CommentItem.jsx';
+import ErrorMessage from '../ErrorMessage.jsx';
 
 /**
  * CommentsContainer component for displaying and adding comments.
@@ -59,7 +60,7 @@ export default function CommentsContainer({ studentSchoolId, programId, userIsSt
 
     // Render loading or error states
     if (loading) return <p>Loading comments...</p>;
-    if (error) return <p className="error-message">Error: {error}</p>;
+    if (error) return <ErrorMessage message={error} />;
 
     // Render comments list and comment form
     return (

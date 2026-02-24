@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import logo from '../../assets/images/boise_state_wbg.png'
 import { useAuth } from '../../auth/AuthProvider.jsx'
 import '../../styles/Styles.css'
+import ErrorMessage from '../../components/ErrorMessage.jsx'
 
 /**
  * @file frontend/src/pages/LogIn/LogIn.jsx
@@ -149,9 +150,7 @@ export default function LogIn() {
                         </label>
 
                         {error && (
-                            <div role="alert" data-testid="error" style={{ color: "red", marginTop: 10}}>
-                                {error}
-                            </div>
+                            <ErrorMessage variant="login" message={error} dataTestId="error" />
                         )}
 
                         <button type="submit" data-testid="submit">Log In</button>
