@@ -24,7 +24,7 @@ RUN npm ci --omit=dev
 FROM node:22-alpine AS runtime
 ENV NODE_ENV=production
 ENV PUBLIC_URL=/s26-excl-nt
-ENV API_BASE_URL=/api
+ENV API_BASE_URL=/s26-excl-nt/api
 WORKDIR /app
 
 # Install PostgreSQL client (for pg_isready)
