@@ -174,26 +174,26 @@ CREATE TABLE timelines (
     program_id INT REFERENCES programs(program_id) ON DELETE CASCADE,
     -- Classes (Class status changes from "planned" to "in progress" to "complete") 
     ---- TODO: This may be redunant with semesters(sem_start_date) and semesters(sem_end_date)?
-    class_start DATE NOT NULL,
-    class_end DATE NOT NULL,
-    commencement_date DATE NOT NULL,
+    class_start DATE,
+    class_end DATE,
+    commencement_date DATE,
     -- Registration Deadlines (Reminders for students, alerts to advisors, lock course status)
-    registration_start DATE NOT NULL,
-    registration_end DATE NOT NULL, -- Open registration ends. Permission number required.
-    registration_drop DATE NOT NULL,
+    registration_start DATE,
+    registration_end DATE, -- Open registration ends. Permission number required.
+    registration_drop DATE,
     -- Application Deadlines (Reminders for students/advisors)
-    apply_for_admission_candidacy DATE NOT NULL,
-    apply_for_grad_and_cert DATE NOT NULL,
+    apply_for_admission_candidacy DATE,
+    apply_for_grad_and_cert DATE,
     -- Dissertation Deadlines
-    dissertation_defense DATE NOT NULL,
-    dissertation_advisor_approved DATE NOT NULL,
-    dissertation_final DATE NOT NULL,
-    dissertation_waiver_next_semester DATE NOT NULL,
+    dissertation_defense DATE,
+    dissertation_advisor_approved DATE,
+    dissertation_final DATE,
+    dissertation_waiver_next_semester DATE,
     -- Other Deadlines
-    portfolio_credit_due DATE NOT NULL, -- Last day to add graduate dissertation, thesis, project, or portfolio credit
-    independent_credit_due DATE NOT NULL, -- Last day to add graduate assessment, directed research, independent study, internship, or reading and conference.
+    portfolio_credit_due DATE, -- Last day to add graduate dissertation, thesis, project, or portfolio credit
+    independent_credit_due DATE, -- Last day to add graduate assessment, directed research, independent study, internship, or reading and conference.
     -- Key
-    PRIMARY KEY (sem_id, prog_id)
+    PRIMARY KEY (semester_id, program_id)
 );
 
 -- Course Prerequisites Table:
