@@ -9,7 +9,7 @@ COPY frontend/ ./
 
 # Build to /app/frontend/dist
 ARG PUBLIC_URL=/s26-excl-nt
-ARG API_BASE_URL=/api
+ARG API_BASE_URL=/s26-excl-nt/api
 ENV VITE_PUBLIC_URL=${PUBLIC_URL}
 ENV VITE_API_BASE_URL=${API_BASE_URL}
 RUN npm run build
@@ -18,7 +18,7 @@ RUN npm run build
 FROM node:22-alpine AS be-deps
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci
+RUN npm ci --omit=dev
 
 # Final Runtime Stage
 FROM node:22-alpine AS runtime
