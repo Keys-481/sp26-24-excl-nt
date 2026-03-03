@@ -7,15 +7,38 @@ const nodemailer = require("nodemailer");
 
 const transporter =
   process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
-    ? nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === "true",
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      })
+    ? (() => {
+        const port = Number(process.env.SMTP_PORT) || 587;
+
+        // Backwards‑compatible: honor SMTP_SECURE if explicitly set,
+        // otherwise derive from port (465 => implicit TLS, else STARTTLS).
+        const secureEnvRaw = process.env.SMTP_SECURE;
+        const secureEnvTrimmed =
+          typeof secureEnvRaw === "string" ? secureEnvRaw.trim().toLowerCase() : "";
+        const hasSecureEnv = secureEnvTrimmed !== "";
+        const secure = hasSecureEnv
+          ? secureEnvTrimmed === "true"
+          : port === 465;
+
+        return nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port,
+          secure,
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+          // Enforce TLS when not using implicit TLS.
+          // For STARTTLS (secure === false), require upgrade to TLS.
+          requireTLS: !secure,
+          tls: {
+            minVersion: "TLSv1.2",
+            // Reject invalid certs by default; can be overridden explicitly if needed.
+            rejectUnauthorized:
+              process.env.SMTP_REJECT_UNAUTHORIZED === "false" ? false : true,
+          },
+        });
+      })()
     : null;
 
 /**
