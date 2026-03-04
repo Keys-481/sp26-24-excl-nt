@@ -70,7 +70,11 @@ The basename is the base URL that will be shown on the SDP website. For example 
 
 3. Ensure that the basename you chose matches throughout `Dockerfile`, `docker-compose.yml` file, and `.env` files.
 
-4. Email Eric Henderson - ehenderson@boisestate.edu - to deploy this project to the SDP server. Ensure that you send him the`.env` file you wish to use. We do not want to commit it directly to the repository, so instead, you can email it to him. 
+4. Add Eric Henderson as a read-only collaborator to your GitHub repository. His GitHub username is ekhenderson.
+
+5. Email Eric Henderson - ehenderson@boisestate.edu - to deploy this project to the SDP server. Ensure that you send him the`.env` file you wish to use. We do not want to commit it directly to the repository, so instead, you can email it to him.
+
+There are more instructions on the [SDP wesbite](https://sdp.boisestate.edu/cs481/home) under Documentation -> Deployment
 
 If there are any issues, remember to use the web dev tools to see what errors are being returned. `fn` + `F12` for Mac and `F12` on Windows.
 
