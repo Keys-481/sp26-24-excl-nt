@@ -59,6 +59,25 @@ sed -i 's/\r$//' build.sh test.sh clean.sh help.sh
 chmod +x build.sh test.sh clean.sh help.sh
 ```
 
+## Setting up to run with SDP Server
+The project should be set up to run on the SDP server, all that needs to be done is changing the basename to the chosen name. This will determine the URL path where the application is hosted at.
+
+The basename is the base URL that will be shown on the SDP website. For example `https://sdp.boisestate.edu/s26-excl-nt/login`, the `/s26-excl-nt` is the basename chosen in this URL.
+
+1. Change all references to the basename in [docker-compose.yml](docker-compose.yml) and [Dockerfile](Dockerfile) with your chosen basename.
+
+2. Create an `.env` file that will include the chosen basename. This basename will then be used for `PUBLIC_URL` and `API_BASE_URL`. For example, `PUBLIC_URL=/basename` and `API_BASE_URL=/basename/api`. Make sure you update the database credentials to what you want them to be.
+
+3. Ensure that the basename you chose matches throughout `Dockerfile`, `docker-compose.yml` file, and `.env` files.
+
+4. Add Eric Henderson as a read-only collaborator to your GitHub repository. His GitHub username is ekhenderson.
+
+5. Email Eric Henderson - ehenderson@boisestate.edu - to deploy this project to the SDP server. Ensure that you send him the`.env` file you wish to use. We do not want to commit it directly to the repository, so instead, you can email it to him.
+
+There are more instructions on the [SDP wesbite](https://sdp.boisestate.edu/cs481/home) under Documentation -> Deployment
+
+If there are any issues, remember to use the web dev tools to see what errors are being returned. `fn` + `F12` for Mac and `F12` on Windows.
+
 ## Testing
 To run the tests, use `./test.sh` or `npm run test` from the root directory. This script relies on the `env.test` file so make sure to create one from the example.
 
