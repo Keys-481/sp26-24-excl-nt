@@ -2,7 +2,7 @@
  * @file backend/tests/models/TimelineModel.test.js
  * @description Unit tests for StudentModel.js using Jest
  * @author Joe Shields
- * @updated 4 Mar 2026
+ * @updated 9 Mar 2026
  */
 
 const { getTimeline, addTimeline,
