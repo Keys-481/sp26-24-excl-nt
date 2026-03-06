@@ -725,11 +725,12 @@ td {
 
 /* Semester View */
 .semester-view-container {
-  margin: 20px 30px;
+  margin: 20px 0;
+  padding: 0 30px;
   border-radius: 8px;
   overflow: hidden;
   background-color: var(--background);
-  width: 100%;
+  box-sizing: border-box;
 }
 
 .semester-header {
@@ -948,7 +949,10 @@ input:checked+.slider:before {
 }
 
 .program-selector-wrapper.student-layout .program-selector {
-  width: 100%;
+  width: auto;
+  min-width: 150px;
+  max-width: 200px;
+  flex-shrink: 0;
   border-right: 1px solid var(--secondary);
 }
 
@@ -960,16 +964,9 @@ input:checked+.slider:before {
   border-bottom: 1px solid var(--secondary);
 }
 
-.degree-plan-comments-wrapper {
-  display: flex;
-  align-items: flex-start;
-  min-height: calc(100vh - 60px);
-  overflow-x: hidden;
-  flex: 1;
-}
-
 .degree-plan-wrapper {
   flex: 1;
+  min-width: 0;
   display: flex;
   padding: 0 20px;
   box-sizing: border-box;
