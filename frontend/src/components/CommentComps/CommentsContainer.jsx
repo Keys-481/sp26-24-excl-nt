@@ -8,19 +8,26 @@ import { useApiClient } from '../../lib/apiClient.js';
 import CommentForm from './CommentForm.jsx';
 import CommentItem from './CommentItem.jsx';
 import ErrorMessage from '../ErrorMessage.jsx';
+import { FaRegWindowMinimize } from 'react-icons/fa';
+import { FaRegWindowMaximize } from 'react-icons/fa';
+import { FaRegWindowClose } from 'react-icons/fa';
+import { FaComment } from "react-icons/fa";
+
 
 /**
  * CommentsContainer component for displaying and adding comments.
  * @param {*} param0 - Props containing studentSchoolId and programId.
  * @returns {JSX.Element} The rendered CommentsContainer component.
  */
-export default function CommentsContainer({ studentSchoolId, programId, userIsStudent=false, className='' }) {
+export default function CommentsContainer({ studentSchoolId, programId, userIsStudent = false, className = '' }) {
 
     const api = useApiClient();
-    const [ comments, setComments ] = useState([]);
-    const [ loading, setLoading ] = useState(true);
-    const [ error, setError ] = useState('');
-    const [ openMenuId, setOpenMenuId ] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [openMenuId, setOpenMenuId] = useState(null);
+    const [modalState, setModalState] = useState('closed');
+
 
     // fetch comments when studentSchoolId or programId changes
     useEffect(() => {
@@ -47,50 +54,75 @@ export default function CommentsContainer({ studentSchoolId, programId, userIsSt
         setComments((prevComments) => [newComment, ...prevComments]);
     }
 
-    if (!studentSchoolId || !programId) {
-        return (
-            <div className={`comments-container ${className}`}>
-                <h4>Comments</h4>
-                <p style={{ padding: "10px", opacity: 0.7 }}>
-                    No program selected.
-                </p>
-            </div>
-        )
-    }
-
-    // Render loading or error states
-    if (loading) return <p>Loading comments...</p>;
-    if (error) return <ErrorMessage message={error} />;
-
-    // Render comments list and comment form
+    // Render modal for the comments
     return (
-        <div className={`comments-container ${className}`}>
-            {/* Comments Header */}
-            <h4>Comments</h4>
-            <div className="comment-form-wrapper">
-                <CommentForm
-                    studentSchoolId={studentSchoolId}
-                    programId={programId}
-                    onCommentPosted={handleCommentAdded}
-                />
-            </div>
-            {/* Comments List */}
-            <ul className="comments-list">
-                {comments.length === 0 ? (
-                    <li className="no-comments">No comments yet.</li>
-                ) : (
-                    comments.map((comment) => (
-                        <CommentItem
-                            key={comment.comment_id}
-                            comment={comment}
-                            userIsStudent={userIsStudent}
-                            setComments={setComments}
-                            openMenuId={openMenuId}
-                            setOpenMenuId={setOpenMenuId}
-                        />
-                    ))
-                )}
-            </ul>
-        </div>
-    )
+        <>
+            {/* Shows the comment icon when modal is closed */}
+            {modalState === 'closed' && (
+                <button className="comments-fab" onClick={() => setModalState('open')}>
+                    <FaComment />
+                </button>
+            )}
+
+            {/* Deals with minimizing/maximizing modal */}
+            {modalState !== 'closed' && (
+                <div className={`modal-container ${modalState}`}>
+                    <div
+                        className="modal-header"
+                        onClick={() => setModalState(modalState === 'open' ? 'minimized' : 'open')}>
+                        <span><FaComment /> Comments</span>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setModalState(modalState === 'open' ? 'minimized' : 'open'); }}
+                                title={modalState === 'open' ? 'Minimize' : 'Expand'}>
+                                {modalState === 'open' ? <FaRegWindowMinimize /> : <FaRegWindowMaximize />}
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setModalState('closed'); }}
+                                title="Close"
+                            >
+                                <FaRegWindowClose />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Deals with loading comments into comment modal */}
+                    {modalState === 'open' && (
+                        <div className="modal-body">
+                            {!studentSchoolId || !programId ? (
+                                <p style={{ opacity: 0.7 }}>No program selected.</p>
+                            ) : loading ? (
+                                <p>Loading comments...</p>
+                            ) : error ? (
+                                <ErrorMessage message={error} />
+                            ) : (
+                                <>
+                                    <CommentForm
+                                        studentSchoolId={studentSchoolId}
+                                        programId={programId}
+                                        onCommentPosted={handleCommentAdded}
+                                    />
+                                    {/* Comments List */}
+                                    <ul className="comments-list">
+                                        {comments.length === 0 ? (<li className="no-comments">No comments yet.</li>) : (
+                                            comments.map((comment) => (
+                                                <CommentItem
+                                                    key={comment.comment_id}
+                                                    comment={comment}
+                                                    userIsStudent={userIsStudent}
+                                                    setComments={setComments}
+                                                    openMenuId={openMenuId}
+                                                    setOpenMenuId={setOpenMenuId}
+                                                />
+                                            ))
+                                        )}
+                                    </ul>
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+        </>
+    );
 }
