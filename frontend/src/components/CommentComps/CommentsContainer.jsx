@@ -8,10 +8,8 @@ import { useApiClient } from '../../lib/apiClient.js';
 import CommentForm from './CommentForm.jsx';
 import CommentItem from './CommentItem.jsx';
 import ErrorMessage from '../ErrorMessage.jsx';
-import { FaRegWindowMinimize } from 'react-icons/fa';
-import { FaRegWindowMaximize } from 'react-icons/fa';
-import { FaRegWindowClose } from 'react-icons/fa';
-import { FaComment } from "react-icons/fa";
+import { Maximize2, Minimize2, MessageCircle, X } from "lucide-react";
+
 
 
 /**
@@ -19,7 +17,7 @@ import { FaComment } from "react-icons/fa";
  * @param {*} param0 - Props containing studentSchoolId and programId.
  * @returns {JSX.Element} The rendered CommentsContainer component.
  */
-export default function CommentsContainer({ studentSchoolId, programId, userIsStudent = false, className = '' }) {
+export default function CommentsContainer({ studentSchoolId, programId, userIsStudent = false, className='' }) {
 
     const api = useApiClient();
     const [comments, setComments] = useState([]);
@@ -60,7 +58,7 @@ export default function CommentsContainer({ studentSchoolId, programId, userIsSt
             {/* Shows the comment icon when modal is closed */}
             {modalState === 'closed' && (
                 <button className="comments-fab" onClick={() => setModalState('open')}>
-                    <FaComment />
+                    <MessageCircle size={18} />
                 </button>
             )}
 
@@ -70,18 +68,18 @@ export default function CommentsContainer({ studentSchoolId, programId, userIsSt
                     <div
                         className="modal-header"
                         onClick={() => setModalState(modalState === 'open' ? 'minimized' : 'open')}>
-                        <span><FaComment /> Comments</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }} ><MessageCircle size={18}/> Comments</span>
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <button
                                 onClick={(e) => { e.stopPropagation(); setModalState(modalState === 'open' ? 'minimized' : 'open'); }}
                                 title={modalState === 'open' ? 'Minimize' : 'Expand'}>
-                                {modalState === 'open' ? <FaRegWindowMinimize /> : <FaRegWindowMaximize />}
+                                {modalState === 'open' ? <Minimize2 size={18}/> : <Maximize2 size={18}/>}
                             </button>
                             <button
                                 onClick={(e) => { e.stopPropagation(); setModalState('closed'); }}
                                 title="Close"
                             >
-                                <FaRegWindowClose />
+                                <X size={18}/>
                             </button>
                         </div>
                     </div>
