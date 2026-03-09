@@ -13,9 +13,9 @@ const pool = require('../db');
  * 
  * @param {*} semesterId 
  * @param {*} programId 
- * @returns an array of data representing the table entry for the specified timeline.
+ * @returns an object representing the table entry for the specified timeline.
  */
-async function getTimelineArray(semesterId, programId) {
+async function getTimeline(semesterId, programId) {
     try {
         const result = await pool.query(
             `SELECT class_start as "Class start",
@@ -27,7 +27,7 @@ async function getTimelineArray(semesterId, programId) {
                     apply_for_admission_candidacy as "Application deadline",
                     apply_for_grad_and_cert as "Grad/Cert applications due",
                     dissertation_defense as "Dissertation defense (recommended)",
-                    dissertaion_advisor_approved as "Advisor approval of dissertation",
+                    dissertation_advisor_approved as "Advisor approval of dissertation",
                     dissertation_final as "Submit final dissertation",
                     dissertation_waiver_next_semester "Waiver for next semester"
             FROM timelines t
@@ -35,7 +35,8 @@ async function getTimelineArray(semesterId, programId) {
             AND t.program_id = $2`,
             [semesterId, programId]
         );
-        return result.rows;
+
+        return (result.rows.length > 0) ? result.rows[0] : null;
     } catch (error) {
         console.error(error)
         throw error;
@@ -55,7 +56,7 @@ async function addTimeline(semesterId, programId) {
         const result = await pool.query(
             `INSERT INTO timelines (semester_id, program_id)
             VALUES ($1, $2)
-            ON CONFLICT (student_id, program_id) DO NOTHING`,
+            ON CONFLICT (semester_id, program_id) DO NOTHING`,
             [semesterId, programId]
         );
         
@@ -86,10 +87,10 @@ async function getClassStartDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -146,10 +147,10 @@ async function getClassEndDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -206,10 +207,10 @@ async function getCommencementDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -266,10 +267,10 @@ async function getRegistrationStartDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -326,10 +327,10 @@ async function getRegistrationEndDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -386,10 +387,10 @@ async function getDropByDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -446,10 +447,10 @@ async function getAdmissionApplicationDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -506,10 +507,10 @@ async function getGradApplicationDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -566,10 +567,10 @@ async function getDissertationDefenseDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -626,10 +627,10 @@ async function getDissertationApprovalDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -686,10 +687,10 @@ async function getDissertationFinalDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -746,10 +747,10 @@ async function getNextSemesterDissertationWaiverDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -806,10 +807,10 @@ async function getPortfolioCreditDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -866,10 +867,10 @@ async function getIndependentCreditDate(semesterId, programId) {
         );
 
         /* Pull the relevant date in postgreSQL format from the response. */
-        const pgsDate = result.rows[0].date;
+        const pgsDate = result.rows[0] ? result.rows[0].date : null;
 
         /* Convert postgreSQL date to a JavaScript Date object and return it. */
-        const jsDate = new Date(pgsDate);
+        const jsDate = pgsDate ? new Date(pgsDate) : null;
         return jsDate;
     } catch (error) {
         console.error(error)
@@ -908,7 +909,7 @@ async function setIndependentCreditDate(semesterId, programId, date) {
 }
 
 module.exports = {
-    getTimelineArray,
+    getTimeline,
     addTimeline,
     getClassStartDate,
     setClassStartDate,
