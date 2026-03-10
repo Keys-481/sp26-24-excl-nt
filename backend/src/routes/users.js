@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router();
 const AccessModel = require('../models/AccessModel');
 const UserModel = require('../models/UserModel');
+const { sendLoginInfoEmail } = require('../services/email');
 
 /**
  * GET /me
@@ -192,6 +193,8 @@ router.post('/', async (req, res) => {
     const { name, email, phone, password, roles, default_view } = req.body;
     try {
         const result = await UserModel.addUser(name, email, phone, password, default_view, roles);
+        const firstName = (name || '').trim().split(/\s+/)[0] || '';
+        await sendLoginInfoEmail(email, firstName);
         res.json({ success: true, userId: result.userId });
     } catch (error) {
         console.error('Error adding user:', error);
