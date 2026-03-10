@@ -4,9 +4,15 @@
  */
 const request = require('supertest');
 const express = require('express');
+
+// Mock email service so tests don't send real emails
+jest.mock('../../src/services/email', () => ({
+  sendLoginInfoEmail: jest.fn().mockResolvedValue(undefined),
+}));
+const { sendLoginInfoEmail } = require('../../src/services/email');
+
 const usersRouter = require('../../src/routes/users');
 const pool = require('../../src/db');
-
 const UserModel = require('../../src/models/UserModel');
 const app = express();
 app.use(express.json());
@@ -41,9 +47,10 @@ describe('User Routes', () => {
    */
   test('POST /api/users - create user', async () => {
     const timestamp = Date.now();
+    const email = `route${timestamp}@test.com`;
     const res = await request(app).post('/api/users').send({
       name: 'Route Tester',
-      email: `route${timestamp}@test.com`,
+      email,
       phone: dynamicPhone,
       password: 'testpass',
       default_view: 'Advisor',
@@ -52,6 +59,11 @@ describe('User Routes', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('userId');
+
+    // Verify first-time login email notification is triggered
+    expect(sendLoginInfoEmail).toHaveBeenCalledTimes(1);
+    expect(sendLoginInfoEmail).toHaveBeenCalledWith(email, 'Route');
+
     createdUserId = res.body.userId;
   });
 
