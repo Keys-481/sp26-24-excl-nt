@@ -1,3 +1,10 @@
+/**
+ * @file backend/tests/utils/timeline.test.js
+ * @description Unit tests for timeline.js using Jest
+ * @author Joe Shields
+ * @updated 4 Mar 2026
+ */
+
 const { isPassed, daysUntil } = require('../../src/utils/timeline');
 
 var lastYear;
