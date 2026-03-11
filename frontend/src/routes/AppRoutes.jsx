@@ -22,6 +22,7 @@ import Notifications from '../pages/Notifications.jsx'
 import AdminDashboard from '../pages/Admin/AdminDashboard.jsx'
 import AdminCourses from '../pages/Admin/Courses'
 import AdminGraduationReport from '../pages/Admin/GraduationReport'
+import AdminImportData from '../pages/Admin/ImportData'
 import AdminSettings from '../pages/Admin/Settings'
 import AdminEnrollmentReport from '../pages/Admin/ReportingFunctionality'
 import AdminUsers from '../pages/Admin/Users'
@@ -71,6 +72,7 @@ export default function AppRoutes() {
             <Route path="/admin/reporting-functionality" element={<AdminEnrollmentReport />} />
             <Route path="/admin/courses" element={<AdminCourses />} />
             <Route path="/admin/graduation-report" element={<AdminGraduationReport />} /> 
+            <Route path="/admin/import-data" element={<AdminImportData />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
 
