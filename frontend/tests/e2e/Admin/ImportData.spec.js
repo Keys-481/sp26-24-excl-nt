@@ -9,9 +9,10 @@
  * file types.
  */
 import { expect, test } from '@playwright/test';
-// import path from 'path';
+import { Buffer } from 'buffer';
 
 test.describe('AdminImportData page', () => {
+    const BASE_PATH = process.env.PUBLIC_URL || '';
 
     /**
      * Ensures tests only run for admin projects.
@@ -43,7 +44,7 @@ test.describe('AdminImportData page', () => {
             });
 
         });
-        await page.goto('/admin/import-data');
+        await page.goto(`${BASE_PATH}/admin/import-data`,);
     });
 
     /**
@@ -80,7 +81,7 @@ test.describe('AdminImportData page', () => {
         await fileInput.setInputFiles({
             name: 'students.xlsx',
             mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            buffer: new TextEncoder().encode('fake xlsx content'),
+            buffer: Buffer.from('fake xlsx content'),
         });
 
         await expect(page.locator('ul')).toContainText('students.xlsx');
@@ -101,7 +102,7 @@ test.describe('AdminImportData page', () => {
         await fileInput.setInputFiles({
             name: 'students.xls',
             mimeType: 'application/vnd.ms-excel',
-            buffer: new TextEncoder().encode('fake xlsx content'),
+            buffer: Buffer.from('fake xlsx content'),
         });
 
         await expect(page.locator('ul')).toContainText('students.xls');
@@ -127,7 +128,7 @@ test.describe('AdminImportData page', () => {
         await fileInput.setInputFiles({
             name: 'students.pdf',
             mimeType: 'application/pdf',
-            buffer: new TextEncoder().encode('fake xlsx content'),
+            buffer: Buffer.from('fake xlsx content'),
         });
 
         const list = page.locator('ul');
@@ -147,8 +148,8 @@ test.describe('AdminImportData page', () => {
         const fileInput = page.locator('input[type="file"]');
 
         await fileInput.setInputFiles([
-            { name: 'students.xls', mimeType: 'application/vnd.ms-excel', buffer: new TextEncoder().encode('fake xlsx content'), },
-            { name: 'courses.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: new TextEncoder().encode('fake xlsx content 2'), },
+            { name: 'students.xls', mimeType: 'application/vnd.ms-excel', buffer: Buffer.from('fake xlsx content'), },
+            { name: 'courses.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('fake xlsx content 2'), },
         ]);
 
         await expect(page.locator('ul')).toContainText('students.xls');
@@ -169,12 +170,12 @@ test.describe('AdminImportData page', () => {
         const fileInput = page.locator('input[type="file"]');
 
         await fileInput.setInputFiles([
-            { name: 'file1.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: new TextEncoder().encode('fake content 1') },
-            { name: 'file2.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: new TextEncoder().encode('fake content 2') },
-            { name: 'file3.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: new TextEncoder().encode('fake content 3') },
-            { name: 'file4.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: new TextEncoder().encode('fake content 4') },
-            { name: 'file5.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: new TextEncoder().encode('fake content 5') },
-            { name: 'file6.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: new TextEncoder().encode('fake content 6') },
+            { name: 'file1.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('fake content 1') },
+            { name: 'file2.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('fake content 2') },
+            { name: 'file3.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('fake content 3') },
+            { name: 'file4.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('fake content 4') },
+            { name: 'file5.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('fake content 5') },
+            { name: 'file6.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: Buffer.from('fake content 6') },
         ]);
 
         const list = page.locator('ul');
