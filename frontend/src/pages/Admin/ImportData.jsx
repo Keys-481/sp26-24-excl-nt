@@ -4,7 +4,7 @@
  */
 import { useDropzone } from 'react-dropzone';
 import AdminNavBar from "../../components/NavBars/AdminNavBar";
-import { ImportIcon } from "lucide-react";
+import { Upload } from "lucide-react";
 
 /**
  * AdminImportData
@@ -49,8 +49,8 @@ export default function AdminImportData() {
                                 <input {...getInputProps()} />
                                 {
                                     isDragActive ?
-                                        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}> <ImportIcon size={18} /> Drop files here... </p> :
-                                        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}> <ImportIcon size={18} /> Drag and drop files here, or click to select files</p>
+                                        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}> <Upload size={18} /> Drop files here... </p> :
+                                        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}> <Upload size={18} /> Drag and drop files here, or click to select files</p>
                                 }
                             </div>
                             {/* Displays the accepted files */}
