@@ -12,7 +12,8 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const FRONTEND_PORT = process.env.FRONTEND_PORT ? Number(process.env.FRONTEND_PORT) : 5173;
 const BACKEND_PORT = process.env.BACKEND_PORT ? Number(process.env.BACKEND_PORT) : 3000;
 const HOST = process.env.HOST || '127.0.0.1';
-const BASE_URL = process.env.BASE_URL || `http://${HOST}:${BACKEND_PORT}`;
+const PUBLIC_URL = process.env.PUBLIC_URL || '';
+const BASE_URL = process.env.BASE_URL || `http://${HOST}:${BACKEND_PORT}${PUBLIC_URL}`;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -31,7 +32,7 @@ export default defineConfig({
   webServer: [
     {
       command: `npm run db:setup --prefix ../backend && npm start --prefix ../backend -- --port ${BACKEND_PORT} --host ${HOST}`,
-      url: `http://${HOST}:${BACKEND_PORT}`,
+      url: `http://${HOST}:${BACKEND_PORT}${PUBLIC_URL}`,
       reuseExistingServer: !process.env.CI,
       timeout: 90_000,
     },
