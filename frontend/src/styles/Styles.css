@@ -133,6 +133,30 @@ body {
   top: 0px;
 }
 
+/* For import data box */
+.import-data-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  width: 50%;
+  height: 50%;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer,
+}
+
+.section-results-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
 /* In container section-results */
 .section-results-side {
   background-color: transparent;
