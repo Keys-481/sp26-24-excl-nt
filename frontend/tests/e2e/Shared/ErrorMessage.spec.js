@@ -3,12 +3,12 @@ import { chromium } from 'playwright';
 
 test.describe('ErrorMessage component integration', () => {
 
-  test('Login error shows icon, label and red color', async () => {
+  test('Login error shows icon, label and red color', async ({baseURL}) => {
     // Run login test in a fresh context (no storageState)
     const browser = await chromium.launch();
     const context = await browser.newContext({ storageState: undefined });
     const page = await context.newPage();
-    await page.goto('/login');
+    await page.goto(`${baseURL}/login`);
 
     await page.waitForSelector('[data-testid="identifier"]', { timeout: 10000 });
     await page.getByTestId('identifier').fill('nope');
@@ -32,11 +32,11 @@ test.describe('ErrorMessage component integration', () => {
     await browser.close();
   });
 
-  test('Advisor page shows "No student selected" message when no student is selected', async ({ page }, testInfo) => {
+  test('Advisor page shows "No student selected" message when no student is selected', async ({ page, baseURL }, testInfo) => {
     if (!testInfo.project?.name?.includes('advisor')) test.skip();
 
     // Visit advisor page with no student selected
-    await page.goto('/advisor/advising');
+    await page.goto(`${baseURL}/advisor/advising`);
 
     // Check for the message in ProgramSelector
     const msg = await page.locator('text=No student selected').first();

@@ -14,10 +14,10 @@ import { expect, test } from '@playwright/test';
  */
 test.describe('Advising - DegreePlan component', () => {
 
-    test('advisor can search student and view degree plan', async ({ page }, testInfo) => {
+    test('advisor can search student and view degree plan', async ({ page, baseURL }, testInfo) => {
         if (!testInfo.project?.name?.includes('advisor')) test.skip();
         // Go to advisor/advising page
-        await page.goto(`/advisor/advising`);
+        await page.goto(`${baseURL}/advisor/advising`);
 
         // Search for the student by school ID
         const searchInput = page.getByPlaceholder('School ID');
@@ -209,11 +209,11 @@ test.describe('DegreePlan edit course status', () => {
         await expect(updatedRow).toHaveClass(/course-status-planned/, { timeout: 15000 });
     });
 
-    test('course status legend includes accessibility features for colorblind users', async ({ page }, testInfo) => {
+    test('course status legend includes accessibility features for colorblind users', async ({ page, baseURL }, testInfo) => {
         if (!testInfo.project?.name?.includes('advisor')) test.skip();
         
         // Go to advisor/advising page
-        await page.goto(`/advisor/advising`);
+        await page.goto(`${baseURL}/advisor/advising`);
 
         // Search for the student by school ID
         const searchInput = page.getByPlaceholder('School ID');

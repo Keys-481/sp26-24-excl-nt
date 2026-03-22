@@ -12,8 +12,7 @@ import { expect, test } from '@playwright/test';
 import { Buffer } from 'buffer';
 
 test.describe('AdminImportData page', () => {
-    const BASE_PATH = process.env.PUBLIC_URL || '';
-
+    
     /**
      * Ensures tests only run for admin projects.
      *
@@ -34,7 +33,7 @@ test.describe('AdminImportData page', () => {
      * @param page Playwright page instance
      * @effect Navigates to /admin/import-data after route setup
      */
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, baseURL }) => {
         // Search endpoint
         await page.route('/import', async (route) => {
             await route.fulfill({
@@ -44,7 +43,7 @@ test.describe('AdminImportData page', () => {
             });
 
         });
-        await page.goto(`${BASE_PATH}/admin/import-data`,);
+        await page.goto(`${baseURL}/admin/import-data`,);
     });
 
     /**

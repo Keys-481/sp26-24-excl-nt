@@ -18,12 +18,12 @@ test.describe('ReportingFunctionality Page', () => {
      *   Navigates the Playwright browser to the Advisor ReportingFunctionality page.
      *   Ensures each test starts from a clean state on the correct route.
      */
-    test.beforeEach(async ({ page }, testInfo) => {
+    test.beforeEach(async ({ page, baseURL }, testInfo) => {
         const role = getRoleFromProject(testInfo);
         if (!role) test.skip();
 
         // Navigate to the ReportingFunctionality page
-        await page.goto(`/${role}/reporting-functionality`);
+        await page.goto(`${baseURL}/${role}/reporting-functionality`);
     });
 
     /**
