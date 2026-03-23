@@ -29,10 +29,10 @@ test.describe('AdminUsers page', () => {
     /**
      * @hook beforeEach
      * @description Sets up mocked backend routes for user operations:
-     * - `/users/search`: Returns a static list of users.
-     * - `/users` (POST): Creates a new user with a fixed ID.
-     * - `/users/:id` (PUT): Updates an existing user.
-     * - `/users/:id` (DELETE): Deletes a user.
+     * - `/api/users/search`: Returns a static list of users.
+     * - `/api/users` (POST): Creates a new user with a fixed ID.
+     * - `/api/users/:id` (PUT): Updates an existing user.
+     * - `/api/users/:id` (DELETE): Deletes a user.
      * Finally, navigates to the Admin Users page.
      * @param {import('@playwright/test').Page} page - Playwright page object.
      */
@@ -54,10 +54,13 @@ test.describe('AdminUsers page', () => {
         await page.route(`/users`, async (route) => {
             if (route.request().method() === 'POST') {
                 const body = await route.request().postDataJSON();
-                const newUser = { ...body, id: 999 };
                 await route.fulfill({
                     contentType: 'application/json',
-                    body: JSON.stringify(newUser),
+                    body: JSON.stringify({
+                        success: true,
+                        userId: 999,
+                        name: body?.name ?? 'Test User',
+                    }),
                 });
                 return;
             }
@@ -65,7 +68,7 @@ test.describe('AdminUsers page', () => {
         });
 
         // Mock update user endpoint
-        await page.route(/\/users\/\d+$/, async (route) => {
+        await page.route(/\/api\/users\/\d+$/, async (route) => {
             if (route.request().method() === 'PUT') {
                 const body = await route.request().postDataJSON();
                 const updatedUser = { ...body };
@@ -79,7 +82,7 @@ test.describe('AdminUsers page', () => {
         });
 
         // Mock delete user endpoint
-        await page.route(/\/users\/\d+$/, async (route) => {
+        await page.route(/\/api\/users\/\d+$/, async (route) => {
             if (route.request().method() === 'DELETE') {
                 await route.fulfill({ status: 200, body: '' });
                 return;
@@ -171,7 +174,7 @@ test.describe('AdminUsers page', () => {
      */
     test('can delete a selected user', async ({ page }) => {
         // Intercept DELETE API
-        await page.route(/\/users\/\d+$/, async (route) => {
+        await page.route(/\/api\/users\/\d+$/, async (route) => {
             if (route.request().method() === 'DELETE') {
                 await route.fulfill({ status: 200, body: '' });
                 return;

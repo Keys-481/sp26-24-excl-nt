@@ -260,6 +260,7 @@ export default function AdminUsers() {
     } catch (err) {
       console.error('Add user error:', err);
       alert('Error adding user');
+      setIsAddingUser(false);
     }
   };
 

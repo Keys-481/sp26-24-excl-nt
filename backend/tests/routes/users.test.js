@@ -7,7 +7,7 @@ const express = require('express');
 
 // Mock email service so tests don't send real emails
 jest.mock('../../src/services/email', () => ({
-  sendLoginInfoEmail: jest.fn().mockResolvedValue(undefined),
+  sendLoginInfoEmail: jest.fn().mockResolvedValue(true),
 }));
 const { sendLoginInfoEmail } = require('../../src/services/email');
 
@@ -47,7 +47,7 @@ describe('User Routes', () => {
    */
   test('POST /api/users - create user', async () => {
     const timestamp = Date.now();
-    const email = `route${timestamp}@test.com`;
+    const email = `route${timestamp}@u.boisestate.edu`;
     const res = await request(app).post('/api/users').send({
       name: 'Route Tester',
       email,
@@ -65,6 +65,20 @@ describe('User Routes', () => {
     expect(sendLoginInfoEmail).toHaveBeenCalledWith(email, 'Route');
 
     createdUserId = res.body.userId;
+  });
+
+  test('POST /api/users - invalid non-BSU email returns 400', async () => {
+    const res = await request(app).post('/api/users').send({
+      name: 'Invalid Email Tester',
+      email: 'invalid@test.com',
+      phone: dynamicPhone,
+      password: 'testpass',
+      default_view: 'Advisor',
+      roles: ['Advisor']
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('error');
   });
 
   /**
@@ -339,7 +353,7 @@ describe('User Routes', () => {
       jest.spyOn(UserModel, 'addUser').mockRejectedValue(new Error('DB error'));
       const res = await request(app).post('/api/users').send({
         name: 'Error Tester',
-        email: 'error@test.com',
+        email: 'error@u.boisestate.edu',
         phone: '555-000-0000',
         password: 'pass',
         default_view: 'Advisor',
@@ -348,6 +362,28 @@ describe('User Routes', () => {
       expect(res.statusCode).toBe(500);
       expect(res.body).toEqual({ error: 'Internal server error' });
       UserModel.addUser.mockRestore();
+    });
+
+    test('POST /api/users - email delivery failure returns 502 and rolls back', async () => {
+      jest.spyOn(UserModel, 'addUser').mockResolvedValue({ userId: 12345 });
+      jest.spyOn(UserModel, 'deleteUser').mockResolvedValue(undefined);
+      sendLoginInfoEmail.mockResolvedValueOnce(false);
+
+      const res = await request(app).post('/api/users').send({
+        name: 'Rollback Tester',
+        email: 'rollback@u.boisestate.edu',
+        phone: '555-111-2222',
+        password: 'pass',
+        default_view: 'Advisor',
+        roles: ['Advisor']
+      });
+
+      expect(res.statusCode).toBe(502);
+      expect(res.body).toEqual({ error: 'Unable to deliver login email. User was not created.' });
+      expect(UserModel.deleteUser).toHaveBeenCalledWith(12345);
+
+      UserModel.addUser.mockRestore();
+      UserModel.deleteUser.mockRestore();
     });
 
     /**

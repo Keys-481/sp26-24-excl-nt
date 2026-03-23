@@ -47,7 +47,7 @@ const transporter =
  *
  * @param {string} toEmail - Recipient email address.
  * @param {string} firstName - User's first name for greeting.
- * @returns {Promise<void>} Resolves when sent or when skipped (no throw).
+ * @returns {Promise<boolean>} true when email is sent successfully, false otherwise.
  */
 async function sendLoginInfoEmail(toEmail, firstName) {
   const baseUrl = (process.env.PUBLIC_URL || "").replace(/\/$/, "");
@@ -84,7 +84,7 @@ async function sendLoginInfoEmail(toEmail, firstName) {
     console.log("[email] SMTP not configured; login info email not sent (dev/test).");
     console.log("[email] Would send to:", toEmail, "| Subject:", subject);
     console.log("[email] Login URL:", loginUrl);
-    return;
+    return false;
   }
 
   try {
@@ -96,9 +96,10 @@ async function sendLoginInfoEmail(toEmail, firstName) {
       html,
     });
     console.log("[email] Login info email sent to:", toEmail);
+    return true;
   } catch (err) {
     console.error("[email] Failed to send login info to", toEmail, err);
-    // Do not throw – user creation already succeeded; email is best-effort.
+    return false;
   }
 }
 
