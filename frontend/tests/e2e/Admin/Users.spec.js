@@ -36,22 +36,22 @@ test.describe('AdminUsers page', () => {
      * Finally, navigates to the Admin Users page.
      * @param {import('@playwright/test').Page} page - Playwright page object.
      */
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, baseURL }) => {
         const users = [
             { id: 1, name: 'Alice Admin', email: 'alice@example.com', role: 'admin' },
             { id: 2, name: 'Bob User', email: 'bob@example.com', role: 'user' },
         ];
 
-        // Mock search endpoint (apiClient prefixes paths with /api)
-        await page.route('**/api/users/search**', async (route) => {
+        // Mock search endpoint
+        await page.route(`/users/search`, async (route) => {
             await route.fulfill({
                 contentType: 'application/json',
                 body: JSON.stringify(users),
             });
         });
 
-        // Mock create user endpoint (exact /api/users, not /api/users/all)
-        await page.route(/\/api\/users(\?.*)?$/, async (route) => {
+        // Mock create user endpoint
+        await page.route(`/users`, async (route) => {
             if (route.request().method() === 'POST') {
                 const body = await route.request().postDataJSON();
                 await route.fulfill({
@@ -91,7 +91,7 @@ test.describe('AdminUsers page', () => {
         });
 
         // Navigate to Users admin page
-        await page.goto('/admin/users');
+        await page.goto(`${baseURL}/admin/users`);
     });
 
     /**

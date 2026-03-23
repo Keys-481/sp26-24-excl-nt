@@ -13,9 +13,9 @@ test.describe('Notifications Page', () => {
      * - Navigates to the `/notifications` route.
      * - Mocks the `/notifications` API response with sample notification data.
      */
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, baseURL }) => {
         // Navigate to the notifications page
-        await page.goto('/notifications');
+        await page.goto(`${baseURL}/notifications`);
 
         // Mock API responses if needed
         await page.route('**/notifications', async route => {

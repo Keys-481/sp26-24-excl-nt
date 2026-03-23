@@ -5,7 +5,7 @@
 import { test, expect } from '@playwright/test';
 
 test('home page loads', async ({ page, baseURL }) => {
-    await page.goto('/');
+    await page.goto(`${baseURL}/`);
     await page.waitForLoadState('domcontentloaded');
 
     // Should land on /login page or role dashboard if already authenticated

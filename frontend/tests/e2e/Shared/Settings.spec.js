@@ -25,9 +25,9 @@ test.describe('User - Settings component', () => {
      * Navigates to the settings page for the current project path and waits
      * until the Settings view is visible, ensuring user info has been loaded.
      */
-    test.beforeEach(async ({ page }, testInfo) => {
+    test.beforeEach(async ({ page, baseURL }, testInfo) => {
         const path = testInfo.project?.name;
-        await page.goto(`/` + path + `/settings`);
+        await page.goto(`${baseURL}/` + path + `/settings`);
         await expect(page.getByText('Settings')).toBeVisible({ timeout: 10000 });
     });
 

@@ -12,7 +12,6 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('AdminCourses page', () => {
-    
     /**
      * Ensures tests only run for admin projects.
      *
@@ -36,7 +35,7 @@ test.describe('AdminCourses page', () => {
      * @param page Playwright page instance
      * @effect Navigates to /admin/courses after route setup
      */
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page, baseURL }) => {
         const courses = [
             {
                 id: 1,
@@ -110,7 +109,7 @@ test.describe('AdminCourses page', () => {
             await route.fallback();
         });
 
-        await page.goto('/admin/courses');
+        await page.goto(`${baseURL}/admin/courses`);
     });
 
     /**
