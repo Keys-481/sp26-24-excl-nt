@@ -8,6 +8,12 @@ const AccessModel = require('../models/AccessModel');
 const UserModel = require('../models/UserModel');
 const { sendLoginInfoEmail } = require('../services/email');
 
+function isValidBoiseStateEmail(email) {
+    if (typeof email !== 'string') return false;
+    const normalized = email.trim().toLowerCase();
+    return /@(?:u\.)?boisestate\.edu$/.test(normalized);
+}
+
 /**
  * GET /me
  * Retrieves the currently authenticated user's profile.
@@ -191,10 +197,22 @@ router.get('/roles/:roleName/permissions', async (req, res) => {
  */
 router.post('/', async (req, res) => {
     const { name, email, phone, password, roles, default_view } = req.body;
+
+    if (!isValidBoiseStateEmail(email)) {
+        return res.status(400).json({
+            error: 'A valid Boise State email address is required (@u.boisestate.edu or @boisestate.edu).'
+        });
+    }
+
     try {
         const result = await UserModel.addUser(name, email, phone, password, default_view, roles);
         const firstName = (name || '').trim().split(/\s+/)[0] || '';
-        await sendLoginInfoEmail(email, firstName);
+        const emailSent = await sendLoginInfoEmail(email, firstName);
+        if (!emailSent) {
+            // Strict requirement: rollback user creation if login email cannot be delivered.
+            await UserModel.deleteUser(result.userId);
+            return res.status(502).json({ error: 'Unable to deliver login email. User was not created.' });
+        }
         res.json({ success: true, userId: result.userId });
     } catch (error) {
         console.error('Error adding user:', error);
