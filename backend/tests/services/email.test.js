@@ -2,8 +2,6 @@
  * file: backend/tests/services/email.test.js
  * Unit tests for email service logging behavior (dev/test mode)
  */
-const { sendLoginInfoEmail } = require('../../src/services/email');
-
 describe('Email Service', () => {
   let logSpy;
 
@@ -20,6 +18,11 @@ describe('Email Service', () => {
     delete process.env.SMTP_HOST;
     delete process.env.SMTP_USER;
     delete process.env.SMTP_PASS;
+
+    // `transporter` is computed at module load time, so re-require the module
+    // after clearing env vars to ensure it becomes `null`.
+    jest.resetModules();
+    const { sendLoginInfoEmail } = require('../../src/services/email');
 
     const email = 'testuser@example.com';
     const firstName = 'Test';

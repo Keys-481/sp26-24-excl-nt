@@ -64,6 +64,10 @@ export default function LogIn() {
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [resendEmail, setResendEmail] = useState("");
+    const [resendMessage, setResendMessage] = useState("");
+    const [resendError, setResendError] = useState("");
+    const [resendLoading, setResendLoading] = useState(false);
     const { isAuthed, login, user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -105,6 +109,33 @@ export default function LogIn() {
             navigate(dest, { replace: true });
         } catch {
             setError("Unable to log in. Try again.");
+        }
+    }
+
+    async function handleResendLoginEmail(e) {
+        e.preventDefault();
+        setResendMessage("");
+        setResendError("");
+        setResendLoading(true);
+        try {
+            const res = await fetch(
+                `${import.meta.env.VITE_API_BASE_URL || "/api"}/auth/resend-login-email`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: resendEmail.trim() }),
+                }
+            );
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                setResendMessage(data.message || "Request processed.");
+            } else {
+                setResendError(data.error || "Could not resend login instructions. Try again.");
+            }
+        } catch {
+            setResendError("Could not resend login instructions. Try again.");
+        } finally {
+            setResendLoading(false);
         }
     }
 
@@ -155,6 +186,46 @@ export default function LogIn() {
 
                         <button type="submit" data-testid="submit">Log In</button>
                     </form>
+
+                    <details className="login-resend" style={{ marginTop: "1.25rem" }}>
+                        <summary style={{ cursor: "pointer", fontWeight: 600 }}>
+                            Didn&apos;t receive login instructions?
+                        </summary>
+                        <p style={{ marginTop: "0.75rem", fontSize: "0.9rem" }}>
+                            Check your <strong>spam</strong> folder. You can resend login instructions to your
+                            Boise State email below.
+                        </p>
+                        <form
+                            onSubmit={handleResendLoginEmail}
+                            className="login-form"
+                            data-testid="resend-login-form"
+                            style={{ marginTop: "0.5rem" }}
+                        >
+                            <label>
+                                Boise State email
+                                <input
+                                    data-testid="resend-email"
+                                    type="email"
+                                    value={resendEmail}
+                                    onChange={(e) => setResendEmail(e.target.value)}
+                                    required
+                                    autoComplete="email"
+                                    placeholder="you@u.boisestate.edu"
+                                />
+                            </label>
+                            {resendMessage && (
+                                <p data-testid="resend-success" style={{ color: "var(--success-color, #1b5e20)" }}>
+                                    {resendMessage}
+                                </p>
+                            )}
+                            {resendError && (
+                                <ErrorMessage variant="login" message={resendError} dataTestId="resend-error" />
+                            )}
+                            <button type="submit" data-testid="resend-submit" disabled={resendLoading}>
+                                {resendLoading ? "Sending…" : "Resend login instructions"}
+                            </button>
+                        </form>
+                    </details>
                 </div>
             </div>
         </main>
