@@ -3,6 +3,8 @@
  * Email sending service. Sends login information to new users when their account is created.
  * If SMTP is not configured (e.g. dev/test), logs the email content instead of sending.
  */
+/* eslint-env node */
+/* global require, process, module */
 const nodemailer = require("nodemailer");
 
 const transporter =
@@ -49,16 +51,22 @@ const transporter =
  * @param {string} firstName - User's first name for greeting.
  * @returns {Promise<boolean>} true when email is sent successfully, false otherwise.
  */
-async function sendLoginInfoEmail(toEmail, firstName) {
+async function sendLoginInfoEmail(toEmail, firstName, options = {}) {
+  const { isResend = false } = options;
   const baseUrl = (process.env.PUBLIC_URL || "").replace(/\/$/, "");
   const loginUrl = baseUrl ? `${baseUrl}/login` : "/login";
   const appName = process.env.APP_NAME || "the application";
 
-  const subject = "Your account is ready – login information";
+  const subject = isResend
+    ? "Login instructions (resent)"
+    : "Your account is ready – login information";
+  const intro = isResend
+    ? `You requested another copy of your login instructions for ${appName}.`
+    : `Your account for ${appName} has been created.`;
   const text = [
     `Hello ${firstName || "there"},`,
     "",
-    `Your account for ${appName} has been created.`,
+    intro,
     "",
     "To log in:",
     `1. Go to: ${loginUrl}`,
@@ -70,7 +78,7 @@ async function sendLoginInfoEmail(toEmail, firstName) {
 
   const html = [
     `<p>Hello ${firstName ? firstName : "there"},</p>`,
-    `<p>Your account for ${appName} has been created.</p>`,
+    `<p>${intro}</p>`,
     "<p><strong>To log in:</strong></p>",
     "<ol>",
     `<li>Go to: <a href="${loginUrl}">${loginUrl}</a></li>`,

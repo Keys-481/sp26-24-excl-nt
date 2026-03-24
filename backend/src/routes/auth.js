@@ -5,7 +5,13 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const pool = require("../db");
+const { sendLoginInfoEmail } = require("../services/email");
+const { isValidBoiseStateEmail } = require("../utils/boiseStateEmail");
 const router = express.Router();
+
+/** Same response whether or not the account exists (avoid email enumeration). */
+const RESEND_GENERIC_MESSAGE =
+  "If an account exists for that Boise State email, login instructions have been sent. Check your inbox and spam folder.";
 
 // Login route
 router.post("/login", async (req, res) => {
@@ -80,6 +86,63 @@ router.post("/login", async (req, res) => {
         });
     } catch (err) {
         console.error("[auth] Login error:", err);
+        return res.status(500).json({ error: "Internal server error." });
+    }
+});
+
+/**
+ * POST /resend-login-email
+ * Resends login instructions to a Boise State address if a matching user exists.
+ * Always returns the same generic message when no account is found (privacy).
+ *
+ * @body {string} email - Boise State email (@u.boisestate.edu or @boisestate.edu)
+ */
+router.post("/resend-login-email", async (req, res) => {
+    const { email } = req.body || {};
+
+    if (!email || typeof email !== "string" || !email.trim()) {
+        return res.status(400).json({ error: "Email is required." });
+    }
+    if (!isValidBoiseStateEmail(email)) {
+        return res.status(400).json({
+            error: "A valid Boise State email is required (@u.boisestate.edu or @boisestate.edu).",
+        });
+    }
+
+    if (!pool || typeof pool.query !== "function") {
+        console.error("[auth] Database pool is not properly initialized.");
+        return res.status(500).json({ error: "Internal server error." });
+    }
+
+    const normalized = email.trim().toLowerCase();
+
+    try {
+        const { rows } = await pool.query(
+            `SELECT user_id, first_name, email
+             FROM users
+             WHERE LOWER(TRIM(email)) = $1
+             LIMIT 1`,
+            [normalized]
+        );
+
+        const user = rows[0];
+        if (!user) {
+            return res.status(200).json({ message: RESEND_GENERIC_MESSAGE });
+        }
+
+        const sent = await sendLoginInfoEmail(user.email, user.first_name || "", {
+            isResend: true,
+        });
+
+        if (!sent) {
+            return res.status(503).json({
+                error: "Unable to send email right now. Please try again later or contact your administrator.",
+            });
+        }
+
+        return res.status(200).json({ message: RESEND_GENERIC_MESSAGE });
+    } catch (err) {
+        console.error("[auth] resend-login-email error:", err);
         return res.status(500).json({ error: "Internal server error." });
     }
 });
