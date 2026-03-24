@@ -49,8 +49,7 @@ const transporter =
  *
  * @param {string} toEmail - Recipient email address.
  * @param {string} firstName - User's first name for greeting.
- * @param {{ isResend?: boolean }} [options]
- * @returns {Promise<boolean>} true if SMTP sent successfully; false if skipped or failed.
+ * @returns {Promise<boolean>} true when email is sent successfully, false otherwise.
  */
 async function sendLoginInfoEmail(toEmail, firstName, options = {}) {
   const { isResend = false } = options;
