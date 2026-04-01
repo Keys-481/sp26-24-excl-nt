@@ -14,10 +14,10 @@ test('create storage state for all roles', async ({ browser, baseURL }) => {
     fs.mkdirSync(outDir, { recursive: true });
 
     const roles = [
-        ['admin',      { id: 1, email: 'admin@boisestate.edu',      first_name: 'Admin',   last_name: 'User',   role: 'admin' }],
-        ['advisor',    { id: 2, email: 'advisor1@boisestate.edu',   first_name: 'Jane',    last_name: 'Doe',    role: 'advisor' }],
-        ['accounting', { id: 3, email: 'acct@boisestate.edu',       first_name: 'Alex',    last_name: 'Numbers',role: 'accounting' }],
-        ['student',    { id: 4, email: 'student1@u.boisestate.edu', first_name: 'Alice',   last_name: 'Johnson',role: 'student' }],
+        ['admin', { id: 1, email: 'admin@boisestate.edu', first_name: 'Admin', last_name: 'User', role: 'admin', public_id: '111122223' }],
+        ['advisor', { id: 2, email: 'advisor1@boisestate.edu', first_name: 'Jane', last_name: 'Doe', role: 'advisor', public_id: '444455556' }],
+        ['accounting', { id: 3, email: 'acct@boisestate.edu', first_name: 'Alex', last_name: 'Numbers', role: 'accounting', public_id: '122368754' }],
+        ['student', { id: 4, email: 'student1@u.boisestate.edu', first_name: 'Alice', last_name: 'Johnson', role: 'student', public_id: '112299690' }],
     ];
 
     for (const [name, user] of roles) {
