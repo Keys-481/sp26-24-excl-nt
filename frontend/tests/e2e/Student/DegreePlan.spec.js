@@ -38,4 +38,39 @@ test.describe('Student Degree Plan', () => {
         await expect(page.getByRole('button', { name: 'Degree Tracking' })).toBeVisible();
         await expect(page.getByRole('button', { name: 'Settings' })).toBeVisible();
     });
+
+    test('comments modal opens and closes', async ({ page, baseURL }) => {
+        // Go to student/degree-tracking page
+        await page.goto(`${baseURL}/student/degree-tracking`);
+
+        // Wait for the list of programs to appear and select one
+        await expect(
+            page.getByText('Master of Science in Organizational Performance and Workplace Learning')
+        ).toBeVisible({ timeout: 10000 });
+
+        // Click on the desired program
+        await page.getByText('Master of Science in Organizational Performance and Workplace Learning').click();
+        
+        // Ensure comments FAB is visible on the page
+        await expect(page.locator('.comments-fab')).toBeVisible();
+
+        // Open modal by clicking on FAB
+        await page.locator('.comments-fab').click();
+        await expect(page.locator('.modal-header')).toContainText('Comments');
+
+        // Close modal 
+        await page.getByTitle('Close').click();
+        await expect(page.locator('.modal-container')).not.toBeVisible();
+        await expect(page.locator('.comments-fab')).toBeVisible();
+
+        // Minimize/maximize modal
+        await page.locator('.comments-fab').click();
+        await page.getByTitle('Minimize').click();
+
+        await expect(page.locator('.modal-body')).not.toBeVisible();
+        await page.getByTitle('Expand').click();
+
+        await expect(page.locator('.modal-body')).toBeVisible();
+        await expect(page.locator('.modal-container')).toHaveClass(/open/);
+    });
 });
