@@ -211,7 +211,7 @@ test.describe('DegreePlan edit course status', () => {
 
     test('course status legend includes accessibility features for colorblind users', async ({ page, baseURL }, testInfo) => {
         if (!testInfo.project?.name?.includes('advisor')) test.skip();
-        
+
         // Go to advisor/advising page
         await page.goto(`${baseURL}/advisor/advising`);
 
@@ -245,10 +245,66 @@ test.describe('DegreePlan edit course status', () => {
         // Find and verify the legend row
         const legendRow = page.locator('.legend-row');
         await legendRow.waitFor({ state: 'visible', timeout: 15000 });
-        
+
         // Verify status labels are present as text (critical accessibility feature for colorblind users)
         await expect(legendRow).toContainText('Planned');
         await expect(legendRow).toContainText('Enrolled');
         await expect(legendRow).toContainText('Completed');
+    });
+
+    test('comments modal opens and closes', async ({ page, baseURL }, testInfo) => {
+        if (!testInfo.project?.name?.includes('advisor')) test.skip();
+
+        // Go to advisor/advising page
+        await page.goto(`${baseURL}/advisor/advising`);
+
+        // Search for the student by school ID
+        const searchInput = page.getByPlaceholder('School ID');
+        await searchInput.fill('112299690');
+        await searchInput.press('Enter');
+
+        // Wait for search results to show up
+        await page.waitForSelector('[data-testid="search-results"], table, .results', { timeout: 10000 });
+        await expect(page.getByText('Alice Johnson', { exact: false })).toBeVisible({ timeout: 10000 });
+
+        // Click on the student result
+        await page.getByText('Alice Johnson', { exact: false }).click();
+
+        // Wait for the list of programs to appear
+        await expect(page.getByText('Master of Science in Organizational Performance and Workplace Learning'))
+            .toBeVisible({ timeout: 10000 });
+
+        // Click the desired program
+        await page.getByText('Master of Science in Organizational Performance and Workplace Learning').click();
+
+        // Wait for the degree plan API call and table to load
+        await page.waitForResponse(
+            r =>
+                r.url().includes('/students/112299690/degree-plan') &&
+                r.status() === 200,
+            { timeout: 10000 }
+        );
+
+        // Ensure comments FAB is visible on the page
+        await expect(page.locator('.comments-fab')).toBeVisible();
+
+        // Open modal by clicking on FAB
+        await page.locator('.comments-fab').click();
+        await expect(page.locator('.modal-header')).toContainText('Comments');
+
+        // Close modal 
+        await page.getByTitle('Close').click();
+        await expect(page.locator('.modal-container')).not.toBeVisible();
+        await expect(page.locator('.comments-fab')).toBeVisible();
+
+        // Minimize/maximize modal
+        await page.locator('.comments-fab').click();
+        await page.getByTitle('Minimize').click();
+
+        await expect(page.locator('.modal-body')).not.toBeVisible();
+        await page.getByTitle('Expand').click();
+
+        await expect(page.locator('.modal-body')).toBeVisible();
+        await expect(page.locator('.modal-container')).toHaveClass(/open/);
     });
 });
