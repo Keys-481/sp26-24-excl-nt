@@ -59,7 +59,9 @@ export default function RoleList({
                                     </thead>
                                     <tbody>
                                         {usersInRole.map((user, idx) => (
-                                            <tr key={idx}>
+                                            <tr key={idx}
+                                                onClick={() => setSelectedUser(prev => (prev?.id === user.id ? null : user))}
+                                            >
                                                 <td>{user.name}</td>
                                                 <td>{user.public}</td>
                                             </tr>

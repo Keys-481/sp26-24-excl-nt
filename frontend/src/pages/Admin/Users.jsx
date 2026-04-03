@@ -181,6 +181,14 @@ export default function AdminUsers() {
    */
     useEffect(() => {
       if (selectedUser) {
+        const isStudent = selectedUser.roles?.some(
+          r => r.toLowerCase() === 'student'
+        );
+        if (!isStudent) {
+          setStudentPrograms([]);
+          return;
+        }
+
         apiClient.get(`/students/${selectedUser.public}/programs`)
           .then((data) => {
             setStudentPrograms(data.programs);
