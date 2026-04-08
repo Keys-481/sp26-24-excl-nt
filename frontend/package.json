@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "exceljs": "^4.4.0",
     "lucide-react": "^0.546.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",

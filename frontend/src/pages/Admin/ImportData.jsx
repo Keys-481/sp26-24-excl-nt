@@ -15,9 +15,8 @@ export default function AdminImportData() {
     const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
         accept: {
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [],
-            'application/vnd.ms-excel': [],
         },
-        onDropRejected: () => alert('Please upload an Excel file (.xlsx or .xls)'),
+        onDropRejected: () => alert('Please upload an Excel file (.xlsx only)'),
         maxFiles: 5,
         onDrop: (files) => {
             // Handle what to do with the files, for now we will just print them to console
