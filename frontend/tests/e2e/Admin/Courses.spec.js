@@ -253,4 +253,27 @@ test.describe('AdminCourses page', () => {
         await page.getByRole('button', { name: 'Cancel' }).click();
         await expect(page.getByRole('button', { name: 'Add Course' })).toBeVisible();
     });
+
+    /**
+     * Tests that list of courses is visible and when clicked, goes to the edit course page
+     * 
+     * Steps:
+     * - Click on first course in list
+     * - Expect "Cancel" button to be visible
+     * - Click "Cancel"
+     * 
+     * Assertion: 
+     * - "Cancel" button is visible after clicking on course 
+     */
+    test('click on list of courses', async ({ page }) => {
+        const firstResult = page.locator('.section-results-side .results-list .result-item').first();
+
+        await expect(firstResult).toBeVisible();
+        await firstResult.click();
+
+        await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
+        await page.getByRole('button', { name: 'Cancel' }).click();
+
+        await expect(page.getByRole('button', { name: 'Add Course' })).toBeVisible();
+    });
 });
