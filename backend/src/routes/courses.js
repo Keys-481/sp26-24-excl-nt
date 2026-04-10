@@ -240,4 +240,33 @@ router.get('/enrollments/all', async (req, res) => {
   }
 });
 
+/**
+ * @route GET /courses
+ * @description Retrieves all courses.
+ * @access Public
+ *
+ * @response 200 - Returns an array of course objects:
+ *  {
+ *    courses: [
+ *      { 
+ *         course_id: number,
+ *         course_code: string,
+ *         course_name: string,
+ *         credits: number
+ *      },
+ *      ...
+ *    ]
+ *  }
+ * @response 500 - Internal server error if retrieval fails.
+ */
+router.get('/', async (req, res) => {
+  try {
+    const rows = await CourseModel.getAllCourses();
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching all courses:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+})
+
 module.exports = router;

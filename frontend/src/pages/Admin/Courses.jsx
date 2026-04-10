@@ -14,6 +14,7 @@ export default function AdminCourses() {
   const [results, setResults] = useState([]);
   const [isAddingCourse, setIsAddingCourse] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [allCourses, setAllCourses] = useState([]);
   const [courseForm, setCourseForm] = useState({
     name: '',
     code: '',
@@ -42,6 +43,17 @@ export default function AdminCourses() {
     setSelectedCourse(null);
   }, []);
 
+  useEffect(() => {
+    const fetchAllCourses = async () => {
+      try {
+        const courses = await apiClient.get('/courses');
+        setAllCourses(courses);
+      } catch (error) {
+        console.error('Error fetching courses: ', error);
+      }
+    };
+    fetchAllCourses();
+  });
 
   /**
    * When a course is selected, populate the form with its data
@@ -178,8 +190,9 @@ export default function AdminCourses() {
             </div>
           </div>
 
-            {/* Report Section */}
+          {/* Report Section */}
           <div className="section-results">
+
             {isAddingCourse ? (
               <div className="section-results-side">
                 <div className="h2-row">
@@ -225,7 +238,7 @@ export default function AdminCourses() {
                     placeholder="e.g. OPWL-536, OPWL-530"
                   />
                 </div>
-                
+
               </div>
             ) : (
               <div className="section-results-side">
@@ -233,6 +246,21 @@ export default function AdminCourses() {
                   <button onClick={() => setIsAddingCourse(true)}>Add Course</button>
                 </div>
                 <div className="horizontal-line"></div>
+                <ul className="results-list">
+                  {allCourses.map((c) => (
+                    <li
+                      key={c.id}
+                      className="result-item"
+                      onClick={() => setSelectedCourse({
+                        id: c.course_id,
+                        name: c.course_name,
+                        code: c.course_code,
+                        credits: c.credits,
+                      })}>
+                      <strong>{c.course_code}</strong> - {c.course_name}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>

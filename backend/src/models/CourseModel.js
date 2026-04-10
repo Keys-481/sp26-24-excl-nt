@@ -181,7 +181,7 @@ async function createCourse({ name, code, credits, prerequisites = '', offerings
       );
     }
 
-    
+
     await client.query('COMMIT');
     return newCourse;
   } catch (error) {
@@ -334,6 +334,29 @@ async function getAllEnrollments() {
   }));
 }
 
+/**
+ * Get all the current courses
+ * @returns {Promise<Array>} Array of { course_id, course_code, course_name, credits }
+ */
+async function getAllCourses() {
+  const sql = `
+    SELECT
+      course_id,
+      course_code,
+      course_name,
+      credits
+    FROM courses
+    ORDER BY course_code
+  `;
+  const { rows } = await pool.query(sql);
+  return rows.map(r => ({
+    course_id: r.course_id,
+    course_code: r.course_code,
+    course_name: r.course_name,
+    credits: r.credits
+  }));
+}
+
 //Export functions
 module.exports = {
   getPrerequisitesForCourse,
@@ -345,5 +368,6 @@ module.exports = {
   updateCourse,
   deleteCourse,
   getEnrollments,
-  getAllEnrollments
+  getAllEnrollments,
+  getAllCourses
 };

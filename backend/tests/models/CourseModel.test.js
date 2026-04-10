@@ -11,7 +11,7 @@ const { getPrerequisitesForCourse, getCourseOfferings, createCourse, updateCours
 
 // Reset and seed the database before each test
 beforeAll(async () => {
-    await runSchemaAndSeeds();
+  await runSchemaAndSeeds();
 }, 15000);
 
 // Close the database connection after all tests
@@ -314,7 +314,7 @@ test('getCourseOfferings throws error when query fails', async () => {
 test('getSemesterOptionsForCourse returns semester options for a valid course', async () => {
   const courseId = 1; // OPWL-536 in seed data
   const semesters = await CourseModel.getSemesterOptionsForCourse(courseId);
-  
+
   expect(Array.isArray(semesters)).toBe(true);
   expect(semesters.length).toBeGreaterThan(0);
   expect(semesters[0]).toHaveProperty('semester_name');
@@ -447,4 +447,52 @@ test('getSemesterOptionsForCourse returns empty array if no offerings', async ()
   const semesters = await CourseModel.getSemesterOptionsForCourse(9999);
   expect(semesters).toEqual([]);
   pool.query.mockRestore();
+});
+
+/**
+ * Tests for CourseModel (getAllCourses)
+ */
+describe('CourseModel - getAllCourses', () => {
+
+  /**
+   * Tests to see if an array of courses is returned
+   */
+  test('returns an array of all courses', async () => {
+    const courses = await CourseModel.getAllCourses();
+    expect(courses).toBeDefined();
+    expect(Array.isArray(courses)).toBe(true);
+    expect(courses.length).toBeGreaterThan(0);
+  });
+
+  /**
+   * Tests to see if the courses are returned with the correct properties
+   */
+  test('returns courses with correct properties', async () => {
+    const courses = await CourseModel.getAllCourses();
+    expect(courses[0]).toHaveProperty('course_id');
+    expect(courses[0]).toHaveProperty('course_code');
+    expect(courses[0]).toHaveProperty('course_name');
+    expect(courses[0]).toHaveProperty('credits');
+  });
+
+  /**
+   * Tests to see if courses are returned in order
+   */
+  test('returns courses ordered by course_code', async () => {
+    const courses = await CourseModel.getAllCourses();
+    const codes = courses.map(c => c.course_code);
+    const sorted = [...codes].sort();
+    expect(codes).toEqual(sorted);
+  });
+
+  /**
+   * Throws an error if the database query fails
+   */
+  test('throws an error when query fails', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => { });
+    jest.spyOn(pool, 'query').mockRejectedValueOnce(new Error('DB failure'));
+    await expect(CourseModel.getAllCourses()).rejects.toThrow('DB failure');
+    pool.query.mockRestore();
+    console.error.mockRestore();
+  });
 });
