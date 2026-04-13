@@ -16,6 +16,19 @@ Environment files required (do not commit to version control), example files are
 * `.env.dev`: for local development
 * `.env.test`: for testing
 
+## Quick start (local development)
+
+From the repo root:
+
+```
+cp .env.example .env
+cp .env.example.dev .env.dev
+cp .env.example.test .env.test
+npm run dev
+```
+
+Then follow the short env checklist (what to paste + what to expect) in `.env.example`.
+
 ## Local Development Setup
 1. Install dependendencies via:
 
