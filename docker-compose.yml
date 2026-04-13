@@ -15,6 +15,7 @@ services:
       DB_NAME: ${DB_NAME}
       API_BASE_URL: "${API_BASE_URL:-/s26-excl-nt/api}"
       PUBLIC_URL: "${PUBLIC_URL:-/s26-excl-nt}"
+      PUBLIC_APP_ORIGIN: "${PUBLIC_APP_ORIGIN:-}"
       # SMTP config inside of Docker smtp variables added to backend
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
