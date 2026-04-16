@@ -1,6 +1,9 @@
 # sp26-24-excl-nt
 ## OPWL Degree Plan Database
-### Joe Shields, Maria Gomez Baeza, Zoe Lawler
+## Members
+  * Joe Shields
+  * Maria Gomez Baeza
+  * Zoe Lawler
 
 ## Abstract
 
