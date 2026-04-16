@@ -44,12 +44,16 @@ test.describe('Student Degree Plan', () => {
         await page.goto(`${baseURL}/student/degree-tracking`);
 
         // Wait for the list of programs to appear and select one
+        const programName = 'Master of Science in Organizational Performance and Workplace Learning';
+        // The program name can appear in multiple places (e.g., label + list item),
+        // so pick the first exact match to avoid strict-mode ambiguity.
+        const programOption = page.getByText(programName, { exact: true }).first();
         await expect(
-            page.getByText('Master of Science in Organizational Performance and Workplace Learning')
+            programOption
         ).toBeVisible({ timeout: 10000 });
 
         // Click on the desired program
-        await page.getByText('Master of Science in Organizational Performance and Workplace Learning').click();
+        await programOption.click();
         
         // Ensure comments FAB is visible on the page
         await expect(page.locator('.comments-fab')).toBeVisible();
