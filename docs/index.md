@@ -1,5 +1,5 @@
-# sp26-24-excl-nt
-## OPWL Degree Plan Database
+# OPWL Degree Plan Database
+
 ## Members
   * Joe Shields
   * Maria Gomez Baeza
@@ -16,8 +16,6 @@ There is currently no standardized way for advisors in OPWL to coordinate and ma
 This project addresses these challenges through the development of a web-based application designed to manage degree plans and certificates centrally. The application will allow advisors and students to easily access up-to-date information, monitor academic progress, and generate predictions for individual course needs. This centralized approach will improve visibility and organization for all users.
 
 The application will feature a robust notification system to alert advisors and students of changes to degree plans or overarching requirements. Commenting functionality will enable direct communication on individual degree plans, supporting collaboration and clarity. Administrative users will have the ability to add and manage students and courses. In addition, built-in data analysis tools will support administrators and decision-makers in forecasting enrollment and planning course allocations for future semesters.
-
-## Screenshots
 
 *Log in page*
 ![Login screenshot](images/Login-Screenshot.png)
