@@ -44,6 +44,31 @@ const transporter =
     : null;
 
 /**
+ * Login URL for email bodies. Keep `PUBLIC_URL` as a pathname (e.g. /s26-excl-nt) for Express/Vite;
+ * set `PUBLIC_APP_ORIGIN` (e.g. https://sdp.boisestate.edu) so links work in mail clients.
+ * Optional `LOGIN_PAGE_URL` sets the full URL and overrides everything else.
+ */
+function getLoginPageUrl() {
+  const override = (process.env.LOGIN_PAGE_URL || "").trim().replace(/\/$/, "");
+  if (override) return override;
+
+  const publicPathRaw = (process.env.PUBLIC_URL || "").trim();
+  const publicPath = publicPathRaw.replace(/\/$/, "");
+
+  if (publicPath.startsWith("http://") || publicPath.startsWith("https://")) {
+    return `${publicPath}/login`;
+  }
+
+  const pathLogin = publicPath ? `${publicPath}/login` : "/login";
+  const origin = (process.env.PUBLIC_APP_ORIGIN || "").trim().replace(/\/$/, "");
+  if (origin) {
+    return `${origin}${pathLogin.startsWith("/") ? pathLogin : `/${pathLogin}`}`;
+  }
+
+  return pathLogin;
+}
+
+/**
  * Sends an email to a new user with login instructions.
  * Uses their email as the login identifier. Does not include the password (set by admin).
  *
@@ -53,8 +78,7 @@ const transporter =
  */
 async function sendLoginInfoEmail(toEmail, firstName, options = {}) {
   const { isResend = false } = options;
-  const baseUrl = (process.env.PUBLIC_URL || "").replace(/\/$/, "");
-  const loginUrl = baseUrl ? `${baseUrl}/login` : "/login";
+  const loginUrl = getLoginPageUrl();
   const appName = process.env.APP_NAME || "the application";
 
   const subject = isResend
